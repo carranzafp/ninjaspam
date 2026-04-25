@@ -1,0 +1,61 @@
+body {
+  min-height: 100vh;
+}
+
+.connect-logo {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+}
+
+.sidebar-brand {
+  padding-top: 0.25rem;
+}
+
+.sidebar-logo {
+  max-width: 190px;
+  width: 100%;
+  height: auto;
+}
+
+.sidebar {
+  min-height: 100vh;
+}
+
+.nav-pills .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid transparent;
+}
+
+.nav-pills .nav-link:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-pills .nav-link.active {
+  background-color: #0d6efd;
+}
+
+.table {
+  border-radius: 0.75rem;
+}
+
+.email-row {
+  cursor: pointer;
+}
+
+.email-body-content {
+  white-space: pre-wrap;
+  min-height: 14rem;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
+.headers-view {
+  white-space: pre-wrap;
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.multiselect-box {
+  min-height: 12rem;
+}

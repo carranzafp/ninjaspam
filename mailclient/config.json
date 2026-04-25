@@ -1,0 +1,21 @@
+{
+  "connection": {
+    "host": "mail.ando.mx",
+    "port": 993,
+    "username": "tests-unir@ando.mx",
+    "ssl": true
+  },
+  "preferences": {
+    "allowed_languages": [
+      "ES",
+      "IT"
+    ],
+    "allowed_countries": [
+      "MX",
+      "IT"
+    ],
+    "allow_links": true,
+    "allow_undisclosed": false,
+    "duplicate_subject_threshold": 3
+  }
+}

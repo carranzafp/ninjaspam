@@ -1,0 +1,339 @@
+[
+  {
+    "uid": 3,
+    "subject": "Hola",
+    "from": [
+      "Pablo Caballero <sinpecs@gmail.com>"
+    ],
+    "to": [
+      "tests-unir@ando.mx"
+    ],
+    "cc": [],
+    "date": "Sat, 25 Apr 2026 09:34:23 -0600",
+    "message_id": "<d94c9caa-7d6f-4f87-9974-657ea9bfd02d@gmail.com>",
+    "content_type": "text/plain",
+    "body": {
+      "plain": "-- \r\n-- Pablo Caballero (SinPECS) Ingeniero y Maestro en Inteligencia \r\nArtificial, con experiencia en marketing digital, ciberseguridad e \r\ninnovaci\u00f3n empresarial.",
+      "html": "",
+      "preferred": "-- \r\n-- Pablo Caballero (SinPECS) Ingeniero y Maestro en Inteligencia \r\nArtificial, con experiencia en marketing digital, ciberseguridad e \r\ninnovaci\u00f3n empresarial."
+    },
+    "headers": [
+      {
+        "name": "Content-Language",
+        "value": "es-ES"
+      },
+      {
+        "name": "Content-Transfer-Encoding",
+        "value": "8bit"
+      },
+      {
+        "name": "Content-Type",
+        "value": "text/plain; charset=\"UTF-8\"; format=\"flowed\""
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 25 Apr 2026 09:34:23 -0600"
+      },
+      {
+        "name": "Delivered-To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "Delivery-date",
+        "value": "Sat, 25 Apr 2026 09:35:06 -0600"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20251104; t=1777131265; x=1777736065; darn=ando.mx;        h=content-transfer-encoding:subject:from:to:content-language         :user-agent:mime-version:date:message-id:from:to:cc:subject:date         :message-id:reply-to;        bh=GycZbbQ9hAK+D7FqcJisKr3kck1+cT3TuXKQ3J1k9vw=;        b=Sr8CFOHs8v7E+59db9VL/m7yvnzqVjgi10GgpOT0tDv78ebaIFbgWgrrQJfdUYtNcq         omVdVSEtAjdoHwwMeuYSySTcDnHqSGtXFy5sFkGOSh5UV/PBXa0qLjFTYNBlIqJja2ZK         9SmT3h9I7iesGhjD7gc4muOPnQi5zfemiXXZ1Edg1pT4QMoMOW1iLeFmz0lIkvtQ43F/         PIcluthqFVTKZPQREr8ICgMEhDYxRNDC9T/z4zyQsCzaM/+azKMDZiBvjCMEHH5l1iLG         EnLdlJAQwSqFRU1WncupxzyfZDROvO1jfhWgGfPoVOlBeJugwx4NQJZYtyRJF5PHoKYq         xoUw=="
+      },
+      {
+        "name": "Envelope-to",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "From",
+        "value": "Pablo Caballero <sinpecs@gmail.com>"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<d94c9caa-7d6f-4f87-9974-657ea9bfd02d@gmail.com>"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Received",
+        "value": "by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-42fdab683b7so1643329fac.3        for <tests-unir@ando.mx>; Sat, 25 Apr 2026 08:34:46 -0700 (PDT)"
+      },
+      {
+        "name": "Received",
+        "value": "from ?IPV6:2806:106e:16:1019:3493:1e5b:11f2:cd82? ([2806:106e:16:1019:3493:1e5b:11f2:cd82])        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42b930afa63sm22493088fac.5.2026.04.25.08.34.24        for <tests-unir@ando.mx>        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);        Sat, 25 Apr 2026 08:34:25 -0700 (PDT)"
+      },
+      {
+        "name": "Received",
+        "value": "from mail-oa1-f46.google.com ([209.85.160.46]:49496)\tby nn7.nube.ninja with esmtps  (TLS1.3) tls TLS_AES_128_GCM_SHA256\t(Exim 4.99.1)\t(envelope-from <sinpecs@gmail.com>)\tid 1wGf2D-0000000Gutn-2vPV\tfor tests-unir@ando.mx;\tSat, 25 Apr 2026 09:35:06 -0600"
+      },
+      {
+        "name": "Received",
+        "value": "from nn7.nube.ninja\tby nn7.nube.ninja with LMTP\tid FKA2Lyrf7GnOhz0AxLpb2A\t(envelope-from <sinpecs@gmail.com>)\tfor <tests-unir@ando.mx>; Sat, 25 Apr 2026 09:35:06 -0600"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<sinpecs@gmail.com>"
+      },
+      {
+        "name": "Return-path",
+        "value": "<sinpecs@gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "Hola"
+      },
+      {
+        "name": "To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "User-Agent",
+        "value": "Mozilla Thunderbird"
+      },
+      {
+        "name": "X-Gm-Gg",
+        "value": "AeBDiesgzg5VSkeByZOR3XAqnKxdUxs74HE/CgAueLbVbaMoh0eRdIfUd+Xhn7fcws4\tLrP90VYv1pCevKalu8NK4zo8QrwblDQ2/eVaPBRNGzjNg6+/jycMIbMG5IS8UI3fSo1zLmSdm4M\tIPTXC3yp2yL5Qmbnz+szosIPYeS7/YVTxO7+Jnm9iZ4ywhB2PjzORrjuHeRzVI2JORxciVzpA+J\tztQ2ZNjQmQyaOD3rPTAs8cq/KV3NFRFueuUzswiJ+N161H70SKWmupzsKx+nWkGUi68RCVMSIr3\tUpRTQ1UsXuKBplR+z9qWUtle0OifJieXBUnEc7H+QWmVaHrKYgsm6F/Y0Gm50ZysRnH5JAR5ogf\txd5HcMlrJWZZvn25ApbyUbyHdyGOOoGZxp0CSWrpLqRZjd/83BxQumgLGt3CpNXJhGtBmRt8mJE\tgjwVwAbRYBv/LOk53kbfqN3LC0ZMjamD8wJWCDO4LEGYTQ2jWD05cdBUTd5KudtyLodMng4m3YA\ttTOuTEW"
+      },
+      {
+        "name": "X-Gm-Message-State",
+        "value": "AOJu0YxFQqB5l2fZTXpmxlvVp4fI/kfNxHIh6wmJN6Qt3VaYXg4MwDJE\t67VKgb/tgPLaCDHFsMan/+aS5r2g7xiUujcwLOWWcCCfnk586o6hqRrlXG7u/A=="
+      },
+      {
+        "name": "X-Google-DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20251104; t=1777131265; x=1777736065;        h=content-transfer-encoding:subject:from:to:content-language         :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state         :from:to:cc:subject:date:message-id:reply-to;        bh=GycZbbQ9hAK+D7FqcJisKr3kck1+cT3TuXKQ3J1k9vw=;        b=se4CMCWwV8IK7BFptTSnCctpFu6Gq7rRNSyZJlQaF3oKLMh/OAc8PRe3rDLCdeEifh         xetXMSlo18r7YAqVXBzo3MY0h/1vDKAyuMmPsSlLPy++17xpQzfNlTk6TlvxZhE3UHk8         0StCHrzFGbMo42jJ/CRAi1lVcJGGXJn3OtdSh3I+ZVqDgjWFHVdZOd1PjTMxSiQubwG8         ffaJ4xYeOaHg2vnGjVXqNbqQlRE9UtkeW5nX+oFt0tDxyiLvjs83nQ5+t6FUda5NoYB8         lEfftm0bzIi3jx7x7Gd4rC0+W2vGMK40oWjw0Y/rdBJyrcaix26/zV67025tYZnk1rv2         +iFw=="
+      },
+      {
+        "name": "X-Ham-Report",
+        "value": ""
+      },
+      {
+        "name": "X-MagicSpam-SUUID",
+        "value": "79cf378a-6765-41d9-a2ba-ddc7b5396d5c"
+      },
+      {
+        "name": "X-MagicSpam-TUUID",
+        "value": "4a6df4fb-6586-4f20-b202-089903f0173c"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:6870:1592:b0:42c:25e7:bfcf with SMTP id 586e51a60fabf-42c25ea807bmr12979721fac.19.1777131265329;        Sat, 25 Apr 2026 08:34:25 -0700 (PDT)"
+      },
+      {
+        "name": "X-Spam-Bar",
+        "value": ""
+      },
+      {
+        "name": "X-Spam-Flag",
+        "value": "NO"
+      },
+      {
+        "name": "X-Spam-Score",
+        "value": ""
+      },
+      {
+        "name": "X-Spam-Status",
+        "value": "No, score="
+      }
+    ],
+    "record_hash": "a43a1d0c53a2f3f6ce892a96848a4792841eb7153c1ecce66adfdb91ae404f2b",
+    "label": "HAM"
+  },
+  {
+    "uid": 2,
+    "subject": "Hola",
+    "from": [
+      "Pablo Caballero <pablo@ethicalprofits.group>"
+    ],
+    "to": [
+      "tests-unir@ando.mx"
+    ],
+    "cc": [],
+    "date": "Sat, 25 Apr 2026 09:34:15 -0600",
+    "message_id": "<66a896e5-1c35-47e1-b29e-a0b4ca66749b@ethicalprofits.group>",
+    "content_type": "multipart/alternative",
+    "body": {
+      "plain": "-- \r\nEthical Profits Group \t\r\n\r\nPablo Caballero (SinPECS)\r\n\r\nDirector General\r\n\r\n\"Ingeniero y Maestro en Inteligencia Artificial, con experiencia en \r\nmarketing digital, ciberseguridad e innovaci\u00f3n empresarial.\"\r\n\r\n\u2709 pablo@ethicalprofits.group\r\n\r\nWA: +52 55 3005 6053 <https://wa.me/525530056053>\r\n\r\nWeb: ethicalprofits.group <https://ethicalprofits.group>\r\n\r\nHONESTIDAD | IGUALDAD | JUSTICIA | LEALTAD | LIBERTAD | ORDEN | PROGRESO\r\n\r\n*Aviso de Privacidad:* Este correo electr\u00f3nico y cualquier archivo \r\nadjunto son confidenciales y est\u00e1n destinados \u00fanicamente al uso del \r\nindividuo o entidad a quien van dirigidos. Si ha recibido este correo \r\npor error, por favor notifique al remitente inmediatamente y elim\u00ednelo \r\nde su sistema.",
+      "html": "<!DOCTYPE html>\r\n<html>\r\n  <head>\r\n\r\n    <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\r\n  </head>\r\n  <body text=\"#000000\" bgcolor=\"#ffffff\">\r\n    <p><br>\r\n    </p>\r\n    <div class=\"moz-signature\">-- <br>\r\n      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"\r\nstyle=\"width:100%;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#333333;line-height:1.5;border-collapse:collapse;\">\r\n        <tbody>\r\n          <tr>\r\n            <td\r\nstyle=\"padding-right:20px;vertical-align:top;border-right:3px solid #bb2023;width:120px;\">\r\n              <img\r\nsrc=\"https://ethicalprofits.group/images/epg-email-sign.png\"\r\n                alt=\"Ethical Profits Group\" width=\"100\"\r\n                style=\"display:block;\"> </td>\r\n            <td style=\"padding-left:20px;vertical-align:top;\">\r\n              <p\r\nstyle=\"margin:0 0 2px 0;font-size:15px;font-weight:bold;color:#1A1A1A;\">Pablo\r\n                Caballero (SinPECS)</p>\r\n              <p\r\nstyle=\"margin:0 0 6px 0;font-size:12px;color:#bb2023;font-weight:600;text-transform:uppercase;letter-spacing:.05em;\">Director\r\n                General</p>\r\n              <p\r\nstyle=\"margin:0 0 6px 0;font-size:12px;font-style:italic;color:#555555;\">\"Ingeniero\r\n                y Maestro en Inteligencia Artificial, con experiencia en\r\n                marketing digital, ciberseguridad e innovaci\u00f3n\r\n                empresarial.\"</p>\r\n              <p style=\"margin:0 0 2px 0;font-size:12px;color:#555555;\">\r\n                <span style=\"color:#555;font-weight:bold;\">\u2709</span>\u00a0<a\r\n                  href=\"mailto:pablo@ethicalprofits.group\"\r\n                  style=\"color:#bb2023;text-decoration:none;\"\r\n                  class=\"moz-txt-link-freetext\">pablo@ethicalprofits.group</a>\r\n              </p>\r\n              <p style=\"margin:0 0 6px 0;font-size:12px;color:#555555;\">\r\n                <span style=\"color:#555;font-weight:bold;\">WA:</span>\u00a0<a\r\n                  href=\"https://wa.me/525530056053\"\r\n                  style=\"color:#555555;text-decoration:none;\">+52 55\r\n                  3005 6053</a> </p>\r\n              <p style=\"margin:0 0 10px 0;font-size:11px;color:#999999;\">\r\n                <span style=\"color:#555;font-weight:bold;\">Web:</span>\u00a0<a\r\n                  href=\"https://ethicalprofits.group\"\r\n                  style=\"color:#bb2023;text-decoration:none;\">ethicalprofits.group</a>\r\n              </p>\r\n              <p\r\nstyle=\"margin:0 0 10px 0;font-size:10px;font-weight:bold;letter-spacing:.03em;\">\r\n                <span style=\"color:#F37F31;\">HONESTIDAD</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#D95B99;\">IGUALDAD</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#FDE457;\">JUSTICIA</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#D14A43;\">LEALTAD</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#F7A844;\">LIBERTAD</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#EF5A78;\">ORDEN</span> <span\r\n                  style=\"color:#ccc;\">|</span> <span\r\n                  style=\"color:#C9A0DC;\">PROGRESO</span> </p>\r\n              <p\r\nstyle=\"margin:0;font-size:10px;color:#888888;border-top:1px solid #EEEEEE;padding-top:8px;line-height:1.3;text-align:justify;\">\r\n                <strong>Aviso de Privacidad:</strong> Este correo\r\n                electr\u00f3nico y cualquier archivo adjunto son\r\n                confidenciales y est\u00e1n destinados \u00fanicamente al uso del\r\n                individuo o entidad a quien van dirigidos. Si ha\r\n                recibido este correo por error, por favor notifique al\r\n                remitente inmediatamente y elim\u00ednelo de su sistema. </p>\r\n            </td>\r\n          </tr>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n  </body>\r\n</html>",
+      "preferred": "-- \r\nEthical Profits Group \t\r\n\r\nPablo Caballero (SinPECS)\r\n\r\nDirector General\r\n\r\n\"Ingeniero y Maestro en Inteligencia Artificial, con experiencia en \r\nmarketing digital, ciberseguridad e innovaci\u00f3n empresarial.\"\r\n\r\n\u2709 pablo@ethicalprofits.group\r\n\r\nWA: +52 55 3005 6053 <https://wa.me/525530056053>\r\n\r\nWeb: ethicalprofits.group <https://ethicalprofits.group>\r\n\r\nHONESTIDAD | IGUALDAD | JUSTICIA | LEALTAD | LIBERTAD | ORDEN | PROGRESO\r\n\r\n*Aviso de Privacidad:* Este correo electr\u00f3nico y cualquier archivo \r\nadjunto son confidenciales y est\u00e1n destinados \u00fanicamente al uso del \r\nindividuo o entidad a quien van dirigidos. Si ha recibido este correo \r\npor error, por favor notifique al remitente inmediatamente y elim\u00ednelo \r\nde su sistema."
+    },
+    "headers": [
+      {
+        "name": "Content-Language",
+        "value": "es-ES"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/alternative; boundary=\"------------44HFf1yp8chFm1QMVRBMKkG9\""
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 25 Apr 2026 09:34:15 -0600"
+      },
+      {
+        "name": "Delivered-To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "Delivery-date",
+        "value": "Sat, 25 Apr 2026 09:34:16 -0600"
+      },
+      {
+        "name": "Envelope-to",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "From",
+        "value": "Pablo Caballero <pablo@ethicalprofits.group>"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<66a896e5-1c35-47e1-b29e-a0b4ca66749b@ethicalprofits.group>"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Received",
+        "value": "from [189.188.59.71] (port=59537 helo=[192.168.1.161])\tby nn7.nube.ninja with esmtpsa  (TLS1.3) tls TLS_AES_128_GCM_SHA256\t(Exim 4.99.1)\t(envelope-from <pablo@ethicalprofits.group>)\tid 1wGf1P-0000000GutE-0dQR\tfor tests-unir@ando.mx;\tSat, 25 Apr 2026 09:34:15 -0600"
+      },
+      {
+        "name": "Received",
+        "value": "from nn7.nube.ninja\tby nn7.nube.ninja with LMTP\tid BgCjBPje7GnWhT0AxLpb2A\t(envelope-from <pablo@ethicalprofits.group>)\tfor <tests-unir@ando.mx>; Sat, 25 Apr 2026 09:34:16 -0600"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<pablo@ethicalprofits.group>"
+      },
+      {
+        "name": "Return-path",
+        "value": "<pablo@ethicalprofits.group>"
+      },
+      {
+        "name": "Subject",
+        "value": "Hola"
+      },
+      {
+        "name": "To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "User-Agent",
+        "value": "Mozilla Thunderbird"
+      },
+      {
+        "name": "X-MagicSpam-SUUID",
+        "value": "3c5aa32e-d096-43ec-a492-c25905daba28"
+      },
+      {
+        "name": "X-MagicSpam-TUUID",
+        "value": "105edfc3-ba86-4799-b288-1448184b29a3"
+      }
+    ],
+    "record_hash": "dc623e9fd6b6f354eb6085f4574e4e96ea568c210009810cbdcad1b850fae80a",
+    "label": "SPAM"
+  },
+  {
+    "uid": 1,
+    "subject": "[ando.mx] Client configuration settings for \u201ctests-unir@ando.mx\u201d.",
+    "from": [
+      "\"cPanel on ando.mx\" <cpanel@ando.mx>"
+    ],
+    "to": [
+      "tests-unir@ando.mx"
+    ],
+    "cc": [],
+    "date": "Sat, 25 Apr 2026 15:33:34 +0000",
+    "message_id": "<1777131214.PXzTFzX6QM8OWZ89@nn7.nube.ninja>",
+    "content_type": "multipart/mixed",
+    "body": {
+      "plain": "Client Configuration settings for \u201ctests-unir@ando.mx\u201d.\r\n\r\n\r\nMail Client Manual Settings\r\n---------------------------\r\n\r\nSecure SSL/TLS Settings (Recommended)\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nIncoming Server:\r\n\r\nmail.ando.mx\r\n\r\n  * IMAP Port: 993\r\n\r\n  * POP3 Port: 995\r\n\r\nOutgoing Server:\r\n\r\nmail.ando.mx\r\n\r\n  * SMTP Port: 465\r\n\r\nIMAP, POP3 y SMTP require authentication.\r\n\r\nNon-SSL Settings (NOT Recommended)\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nIncoming Server:\r\n\r\nmail.ando.mx\r\n\r\n  * IMAP Port: 143\r\n\r\n  * POP3 Port: 110\r\n\r\nOutgoing Server:\r\n\r\nmail.ando.mx\r\n\r\n  * SMTP Port: 26\r\n\r\nIMAP, POP3 y SMTP require authentication.\r\n\r\n\r\nCalendar & Contacts Manual Settings\r\n-----------------------------------\r\n\r\nSecure SSL/TLS Settings (Recommended).\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nServer:\r\n\r\nhttps://mail.ando.mx:2080\r\n\r\n  * Port: 2080\r\n\r\nFull Calendar URL(s):\r\n\r\n  * cPanel CalDAV Calendar:\r\n\r\n  * https://mail.ando.mx:2080/calendars/tests-unir@ando.mx/calendar\r\n\r\nFull Contact List URL(s):\r\n\r\n  * cPanel CardDAV Address Book:\r\n\r\n  * https://mail.ando.mx:2080/addressbooks/tests-unir@ando.mx/addressbook\r\n\r\nNon-SSL Settings (NOT Recommended).\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nServer:\r\n\r\nhttp://mail.ando.mx:2079\r\n\r\n  * Port: 2079\r\n\r\nFull Calendar URL(s):\r\n\r\n  * cPanel CalDAV Calendar:\r\n\r\n  * http://mail.ando.mx:2079/calendars/tests-unir@ando.mx/calendar\r\n\r\nFull Contact List URL(s):\r\n\r\n  * cPanel CardDAV Address Book:\r\n\r\n  * http://mail.ando.mx:2079/addressbooks/tests-unir@ando.mx/addressbook\r\n\r\nA .mobileconfig file for use with iOS for iPhone/iPad/iPod and MacOS\u00ae Mail.app\u00ae for Mountain Lion (10.8+) is attached to this message.\r\n\r\nThis notice is the result of a request made by a computer with the IP address of \u201c189.188.59.71\u201d through the \u201ccpanel\u201d service on the server.\r\n\r\nA reverse DNS lookup on the remote IP address returned the host name \u2018dsl-71-59-188-189-dynamic.prod-infinitum.com.mx\u2019.\r\n\r\nThe remote computer\u2019s location appears to be: Mexico (MX).\r\n\r\nThe remote computer\u2019s IP address is assigned to the provider: \u2018Gesti\u00f3n de direccionamiento UniNet\u2019\r\n\r\nThe remote computer\u2019s network link type appears to be: \u201cDSL\u201d.\r\n\r\nThe remote computer\u2019s operating system appears to be: \u201cWindows\u201d with version \u201cNT kernel 5.x\u201d.\r\n\r\nThe system generated this notice on s\u00e1bado, 25 de abril de 2026 at 3:33:34 p.m. UTC.\r\n\r\nDo not reply to this automated message.\r\n\r\ncP\r\n\r\nCopyright\u00a9 2026 cPanel, L.L.C.",
+      "html": "<body style=\"background:#F4F4F4\">\r\n    <div style=\"margin:0;padding:0;background:#F4F4F4\">\r\n        <table cellpadding=\"10\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"width:0 auto;\">\r\n            <tbody>\r\n                <tr>\r\n                    <td align=\"center\">\r\n                        <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"680\" style=\"border:0;width:0 auto;max-width:680px;\">\r\n                            <tbody>\r\n                                <tr>\r\n                                    \r\n                                    <td width=\"680\" height=\"25\" style=\"font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;color:#333333\">\r\n                                        \r\n                                            \r\n                                            Client Configuration settings for \u201ctests-unir@ando.mx\u201d.\r\n                                        \r\n                                    </td>\r\n                                    \r\n                                </tr>\r\n                                <tr>\r\n                                    \r\n                                    <td style=\"padding: 15px 0 20px 0; background-color: #FFFFFF; border: 2px solid #E8E8E8; border-bottom: 2px solid #FF6C2C;\">\r\n                                        <table width=\"680\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#FFFFFF;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;\">\r\n                                            <tbody>\r\n                                                <tr>\r\n                                                    <td width=\"15\">\r\n                                                    </td>\r\n                                                    <td width=\"650\">\r\n                                                        <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\r\n                                                            <tbody>\r\n                                                                <tr>\r\n                                                                    <td>\r\n                                                                        <div id=\"manual_settings_area\" class=\"section\">\r\n        <h2 id=\"hdrManualSettings\">Mail Client Manual Settings</h2>\r\n        \r\n        <div class=\"row\">\r\n         <div class=\"col-md-6\">\r\n          <div id=\"ssl_settings_area\"\r\n            \r\n            style=\"background-color: #fff;  border: 1px solid transparent; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); margin-bottom: 20px; border-color: #428bca;\"\r\n            \r\n            class=\"preferred-selection panel panel-primary\">\r\n               <div\r\n                \r\n                style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; padding: 10px 15px; background-color: #428bca; border-color: #428bca; color: #fff;\"\r\n                \r\n                class=\"panel-heading\">\r\n                Secure <abbr title=\"Secure Sockets Layer\">SSL</abbr>/<abbr title=\"Transport Layer Security\">TLS</abbr> Settings\r\n                (Recommended)\r\n              </div>\r\n              <table class=\"table manual_settings_table\" style=\"border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; background-color: transparent; max-width: 100%;\">\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblSSLSettingsAreaUsername\">Username:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valSSLSettingsAreaUsername\" class=\"data wrap-text\">tests-unir@ando.mx</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblSettingsAreaPassword\">Contrase\u00f1a:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valSettingsAreaPassword\" class=\"escape-note\"> Use the email account\u2019s password.</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblSettingsAreaIncomingServer\">Incoming Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valSettingsAreaIncomingServer\" class=\"data\">mail.ando.mx\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Internet Message Access Protocol\" class=\"initialism\">IMAP</abbr> Port: 993</li>\r\n                              \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Post Office Protocol 3\" class=\"initialism\">POP3</abbr> Port: 995</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblSettingsAreaOutgoingServer\">Outgoing Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valSettingsAreaOutGoingServer\" class=\"data\">mail.ando.mx\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Simple Mail Transfer Protocol\">SMTP</abbr> Port: 465</li>\r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" colspan=\"2\" class=\"notes\">\r\n                                                    \r\n                                                                                <div id=\"lblSettingsAreaSmallNote1\" class=\"small_note\">IMAP, POP3 y SMTP require authentication.</div>\r\n                      </td>\r\n                  </tr>\r\n              </table>\r\n          </div>\r\n         </div>\r\n  \r\n      </div>\r\n        \r\n\r\n        <div class=\"row\" id=\"nonSSL\" style=\"display: none\">\r\n         <div class=\"col-md-6\">\r\n           <div id=\"non_ssl_settings_area\"\r\n            \r\n            style=\"background-color: #fff;  border: 1px solid transparent; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); margin-bottom: 20px; border-color: #f6c342;\"\r\n            \r\n           class=\"panel panel-default panel-warning\">\r\n               <div\r\n                \r\n                style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; padding: 10px 15px; background-color: #fcf8e1; border-color: #f6c342; color: #333;\"\r\n                \r\n                class=\"panel-heading\">\r\n                <span id=\"descNonSSLSettings\" class=\"caption not-recommended\">Non-SSL Settings (NOT Recommended)</span>\r\n              </div>\r\n              <table id=\"tblManualSettingsTable\" class=\"table manual_settings_table\" style=\"border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; background-color: transparent; max-width: 100%;\">\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblNonSSLSettingsUsername\">Username:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valNonSSLSettingsUsername\" class=\"data wrap-text\">tests-unir@ando.mx</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblNonSSLSettingsPassword\">Contrase\u00f1a:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valNonSSLSettingsPassword\" class=\"escape-note\">Use the email account\u2019s password.</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"lblNonSSLSettingsIncomingServer\">Incoming Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"valNonSSLSettingsIncomingServer\" class=\"data\">mail.ando.mx                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Internet Message Access Protocol\" class=\"initialism\">IMAP</abbr> Port: 143</li>\r\n                               \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Post Office Protocol 3\" class=\"initialism\">POP3</abbr> Port: 110</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                   \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"NonSSLSettingsOutgoingServer\">Outgoing Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" id=\"NonSSLSettingsOutgoingServerData\" class=\"data\">mail.ando.mx                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><abbr title=\"Simple Mail Transfer Protocol\">SMTP</abbr> Port: 26</li>\r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" colspan=\"2\" class=\"notes\">\r\n                                                    \r\n                                                                                <div id=\"descNonSSLSettingsAuthenticationIsRequiredForIMAPPOP3SMTP1\" class=\"small_note\">IMAP, POP3 y SMTP require authentication.</div>\r\n                      </td>\r\n                  </tr>\r\n              </table>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n    </div><div class=\"section\">\r\n        <h2>Calendar &amp; Contacts Manual Settings</h2>\r\n        <div class=\"row\">\r\n         \r\n         <div class=\"col-md-6\">\r\n          <div style=\"background-color: #fff;  border: 1px solid transparent; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); margin-bottom: 20px; border-color: #428bca;\" class=\"preferred-selection panel panel-primary\">\r\n               <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; padding: 10px 15px; background-color: #428bca; border-color: #428bca; color: #fff;\" class=\"panel-heading\">\r\n                Secure <abbr title=\"Secure Sockets Layer\">SSL</abbr>/<abbr title=\"Transport Layer Security\">TLS</abbr> Settings (Recommended).\r\n              </div>\r\n              <table class=\"table manual_settings_table\" style=\"border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; background-color: transparent; max-width: 100%;\">\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Username:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data wrap-text\">tests-unir@ando.mx</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Contrase\u00f1a:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"escape-note\"> Use the email account\u2019s password.</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">https://mail.ando.mx:2080\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">Port: 2080</li>\r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Full Calendar URL(s):</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><b>cPanel CalDAV Calendar</b>:</li>\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">https://mail.ando.mx:2080/calendars/tests-unir@ando.mx/calendar</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Full Contact List URL(s):</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><b>cPanel CardDAV Address Book</b>:</li>\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">https://mail.ando.mx:2080/addressbooks/tests-unir@ando.mx/addressbook</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n              </table>\r\n          </div>\r\n         </div>\r\n         \r\n         <div class=\"col-md-6\">\r\n          <div style=\"background-color: #fff;  border: 1px solid transparent; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); margin-bottom: 20px; border-color: #f6c342;\" class=\"preferred-selection panel panel-primary\">\r\n               <div style=\"border-top-left-radius: 3px; border-top-right-radius: 3px; padding: 10px 15px; background-color: #fcf8e1; border-color: #f6c342; color: #333;\" class=\"panel-heading\">\r\n                Non-SSL Settings (NOT Recommended).\r\n              </div>\r\n              <table class=\"table manual_settings_table\" style=\"border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; background-color: transparent; max-width: 100%;\">\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Username:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data wrap-text\">tests-unir@ando.mx</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Contrase\u00f1a:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"escape-note\"> Use the email account\u2019s password.</td>\r\n                  </tr>\r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Server:</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">http://mail.ando.mx:2079\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">Port: 2079</li>\r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Full Calendar URL(s):</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><b>cPanel CalDAV Calendar</b>:</li>\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">http://mail.ando.mx:2079/calendars/tests-unir@ando.mx/calendar</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n                  \r\n                  <tr>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\">Full Contact List URL(s):</td>\r\n                      <td style=\"border-top: 1px solid #ddd; padding: 8px;\" class=\"data\">\r\n                          <ul\r\n                          style=\"margin-bottom: 10px; margin-top: 0; list-style: outside none none; margin-left: -5px; padding-left: 0;\"\r\n                          class=\"port_list list-inline\">\r\n                              \r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\"><b>cPanel CardDAV Address Book</b>:</li>\r\n                              <li style=\"display: inline-block; padding-left: 5px; padding-right: 5px;\">http://mail.ando.mx:2079/addressbooks/tests-unir@ando.mx/addressbook</li>\r\n                              \r\n                          </ul>\r\n                      </td>\r\n                  </tr>\r\n                  \r\n              </table>\r\n          </div>\r\n         </div>\r\n         \r\n        </div>\r\n      </div>\r\n    </div><p>\r\n A .mobileconfig file for use with iOS for iPhone/iPad/iPod and MacOS\u00ae Mail.app\u00ae for Mountain Lion (10.8+) is attached to this message.\r\n</p>\r\n                                                                    </td>\r\n                                                                </tr>\r\n                                                                <tr>\r\n                                                                    <td>\r\n                                                                        <div style=\"font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;border-top: 2px solid #E8E8E8; padding-top:5px; margin-top: 5px; font-size:12px; color: #666666;\">\r\n        <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n        \r\n          This notice is the result of a request made by a computer with the <abbr title=\"Internet Protocol\">IP</abbr> address of \u201c189.188.59.71\u201d through the \u201ccpanel\u201d service on the server.\r\n        \r\n    </p>\r\n\r\n                        <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n                A reverse <abbr title=\"Domain Name Service\">DNS</abbr> lookup on the remote <abbr title=\"Internet Protocol\">IP</abbr> address returned the host name \u2018dsl-71-59-188-189-dynamic.prod-infinitum.com.mx\u2019.\r\n            </p>\r\n                <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n                            The remote computer\u2019s location appears to be: Mexico (MX).\r\n                    </p>\r\n        \r\n            \r\n                <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n                  The remote computer\u2019s <abbr title=\"Internet Protocol\">IP</abbr> address is assigned to the provider: \u2018Gesti\u00f3n de direccionamiento UniNet\u2019\r\n                </p>\r\n            \r\n            \r\n\r\n         \r\n                            <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n          The remote computer\u2019s network link type appears to be: \u201cDSL\u201d.\r\n        </p>\r\n                          <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n          \r\n            The remote computer\u2019s operating system appears to be: \u201cWindows\u201d with version \u201cNT kernel 5.x\u201d.\r\n          \r\n        </p>\r\n          \r\n    <p style=\"padding:0 0 0 0; margin: 5px 0 0 0;\">\r\n        The system generated this notice on s\u00e1bado, 25 de abril de 2026 at 3:33:34\u202fp.m. UTC.\r\n    </p>\r\n</div>                                                                        \r\n                                                                           <!-- -->\r\n                                                                        \r\n<p>\r\n    Do not reply to this automated message.\r\n</p>\r\n                                                                    </td>\r\n                                                                </tr>\r\n                                                            </tbody>\r\n                                                        </table>\r\n\r\n                                                    </td>\r\n                                                    <td width=\"15\">\r\n                                                    </td>\r\n                                                </tr>\r\n                                            </tbody>\r\n                                        </table>\r\n                                    </td>\r\n                                    \r\n                                </tr>\r\n                                <tr>\r\n                                    <td align=\"center\" style=\"padding-top: 10px;\">\r\n                                    \r\n                                        <img src=\"cid:auto_cid_3827217240\" height=\"25\" width=\"25\" style=\"border:0;line-height:100%;border:0\" alt=\"cP\">\r\n                                        <p style=\"font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#666666; padding: 0; margin: 0;\">Copyright\u00a9\u00a02026 cPanel, L.L.C.<p>\r\n                                    \r\n                                    </td>\r\n                                </tr>\r\n                            </tbody>\r\n                        </table>\r\n                    </td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</body>",
+      "preferred": "Client Configuration settings for \u201ctests-unir@ando.mx\u201d.\r\n\r\n\r\nMail Client Manual Settings\r\n---------------------------\r\n\r\nSecure SSL/TLS Settings (Recommended)\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nIncoming Server:\r\n\r\nmail.ando.mx\r\n\r\n  * IMAP Port: 993\r\n\r\n  * POP3 Port: 995\r\n\r\nOutgoing Server:\r\n\r\nmail.ando.mx\r\n\r\n  * SMTP Port: 465\r\n\r\nIMAP, POP3 y SMTP require authentication.\r\n\r\nNon-SSL Settings (NOT Recommended)\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nIncoming Server:\r\n\r\nmail.ando.mx\r\n\r\n  * IMAP Port: 143\r\n\r\n  * POP3 Port: 110\r\n\r\nOutgoing Server:\r\n\r\nmail.ando.mx\r\n\r\n  * SMTP Port: 26\r\n\r\nIMAP, POP3 y SMTP require authentication.\r\n\r\n\r\nCalendar & Contacts Manual Settings\r\n-----------------------------------\r\n\r\nSecure SSL/TLS Settings (Recommended).\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nServer:\r\n\r\nhttps://mail.ando.mx:2080\r\n\r\n  * Port: 2080\r\n\r\nFull Calendar URL(s):\r\n\r\n  * cPanel CalDAV Calendar:\r\n\r\n  * https://mail.ando.mx:2080/calendars/tests-unir@ando.mx/calendar\r\n\r\nFull Contact List URL(s):\r\n\r\n  * cPanel CardDAV Address Book:\r\n\r\n  * https://mail.ando.mx:2080/addressbooks/tests-unir@ando.mx/addressbook\r\n\r\nNon-SSL Settings (NOT Recommended).\r\n\r\nUsername:\r\n\r\ntests-unir@ando.mx\r\n\r\nContrase\u00f1a:\r\n\r\nUse the email account\u2019s password.\r\n\r\nServer:\r\n\r\nhttp://mail.ando.mx:2079\r\n\r\n  * Port: 2079\r\n\r\nFull Calendar URL(s):\r\n\r\n  * cPanel CalDAV Calendar:\r\n\r\n  * http://mail.ando.mx:2079/calendars/tests-unir@ando.mx/calendar\r\n\r\nFull Contact List URL(s):\r\n\r\n  * cPanel CardDAV Address Book:\r\n\r\n  * http://mail.ando.mx:2079/addressbooks/tests-unir@ando.mx/addressbook\r\n\r\nA .mobileconfig file for use with iOS for iPhone/iPad/iPod and MacOS\u00ae Mail.app\u00ae for Mountain Lion (10.8+) is attached to this message.\r\n\r\nThis notice is the result of a request made by a computer with the IP address of \u201c189.188.59.71\u201d through the \u201ccpanel\u201d service on the server.\r\n\r\nA reverse DNS lookup on the remote IP address returned the host name \u2018dsl-71-59-188-189-dynamic.prod-infinitum.com.mx\u2019.\r\n\r\nThe remote computer\u2019s location appears to be: Mexico (MX).\r\n\r\nThe remote computer\u2019s IP address is assigned to the provider: \u2018Gesti\u00f3n de direccionamiento UniNet\u2019\r\n\r\nThe remote computer\u2019s network link type appears to be: \u201cDSL\u201d.\r\n\r\nThe remote computer\u2019s operating system appears to be: \u201cWindows\u201d with version \u201cNT kernel 5.x\u201d.\r\n\r\nThe system generated this notice on s\u00e1bado, 25 de abril de 2026 at 3:33:34 p.m. UTC.\r\n\r\nDo not reply to this automated message.\r\n\r\ncP\r\n\r\nCopyright\u00a9 2026 cPanel, L.L.C."
+    },
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"mixed-Cpanel::Email::Object-4031693-1777131214-0.414116486571594\""
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 25 Apr 2026 15:33:34 +0000"
+      },
+      {
+        "name": "Delivered-To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "Delivery-date",
+        "value": "Sat, 25 Apr 2026 09:33:35 -0600"
+      },
+      {
+        "name": "Envelope-to",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "From",
+        "value": "\"cPanel on ando.mx\" <cpanel@ando.mx>"
+      },
+      {
+        "name": "Message-Id",
+        "value": "<1777131214.PXzTFzX6QM8OWZ89@nn7.nube.ninja>"
+      },
+      {
+        "name": "Mime-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Received",
+        "value": "from [127.0.0.1] (port=60106 helo=localhost.localdomain)\tby nn7.nube.ninja with esmtpa (Exim 4.99.1)\t(envelope-from <cpanel@ando.mx>)\tid 1wGf0k-0000000GupO-0pem\tfor tests-unir@ando.mx;\tSat, 25 Apr 2026 09:33:34 -0600"
+      },
+      {
+        "name": "Received",
+        "value": "from nn7.nube.ninja\tby nn7.nube.ninja with LMTP\tid rry8Bc/e7GnjhD0AxLpb2A\t(envelope-from <cpanel@ando.mx>)\tfor <tests-unir@ando.mx>; Sat, 25 Apr 2026 09:33:35 -0600"
+      },
+      {
+        "name": "Reply-To",
+        "value": "\"cPanel on ando.mx\" <cpanel@ando.mx>"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<cpanel@ando.mx>"
+      },
+      {
+        "name": "Return-path",
+        "value": "<cpanel@ando.mx>"
+      },
+      {
+        "name": "Subject",
+        "value": "[ando.mx] Client configuration settings for \u201ctests-unir@ando.mx\u201d."
+      },
+      {
+        "name": "To",
+        "value": "tests-unir@ando.mx"
+      },
+      {
+        "name": "X-iContact_locale",
+        "value": "es_419"
+      },
+      {
+        "name": "X-MagicSpam-SUUID",
+        "value": "a264c72f-14e4-45bf-a2a6-df1414423371"
+      },
+      {
+        "name": "X-MagicSpam-TUUID",
+        "value": "2a7c947c-0a15-47b7-9163-2cc9f31b7055"
+      }
+    ],
+    "record_hash": "d368a71bfbb07a6cca95f6c3d3e29b92683e036ce88bacb03dd4e92208e35ec6",
+    "label": "HAM"
+  }
+]
