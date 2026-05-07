@@ -1,66 +1,84 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
-from flask import Flask, send_from_directory
-from flask_sock import Sock
+from flask import Flask, send_from_directory, request, jsonify, Response
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from backend.config import DEFAULT_CONFIG, load_config, save_config
 from backend.imap_service import ImapMailboxClient
 from backend.mail_database import clear_database, ensure_database, store_labeled_email, test_email_with_stub
+from backend.email_analyzer import calculate_header_score
+from backend.ai_service import analyze_spam_with_ai
 
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
 app = Flask(__name__, static_folder=str(FRONTEND_DIR), static_url_path="")
-sock = Sock(app)
 ensure_database()
 
+def check_auth(username, password):
+    expected_user = os.environ.get('WEB_AUTH_USER', 'admin')
+    expected_pass = os.environ.get('WEB_AUTH_PASS', 'secret')
+    return username == expected_user and password == expected_pass
+
+def authenticate():
+    return Response(
+        'Acceso denegado. Ingresa el usuario y contraseña correctos.', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
+
+@app.before_request
+def require_auth():
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
 
 @app.get("/")
 def index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 
+@app.post("/api/command")
+def api_command():
+    try:
+        message = request.get_json()
+    except Exception:
+        return jsonify(_error_response("invalid_json", "Message must be valid JSON."))
+
+    command = message.get("command")
+    payload = message.get("payload", {})
+
+    if command == "connect":
+        return jsonify(handle_connect(payload))
+    elif command == "get_email_detail":
+        return jsonify(handle_get_email_detail(payload))
+    elif command == "classify_email":
+        return jsonify(handle_classify_email(payload))
+    elif command == "test_email":
+        return jsonify(handle_test_email(payload))
+    elif command == "clear_database":
+        return jsonify(handle_clear_database(payload))
+    elif command == "get_config":
+        return jsonify(_success_response("config_loaded", {"config": load_config()}))
+    elif command == "save_config":
+        return jsonify(handle_save_config(payload))
+    elif command == "analyze_ai":
+        return jsonify(handle_analyze_ai(payload))
+    else:
+        return jsonify(_error_response("unknown_command", f"Unsupported command: {command}"))
+
 @app.get("/<path:path>")
 def static_files(path: str):
     return send_from_directory(FRONTEND_DIR, path)
 
 
-@sock.route("/ws")
-def websocket_endpoint(ws):
-    while True:
-        raw_message = ws.receive()
-        if raw_message is None:
-            break
 
-        try:
-            message = json.loads(raw_message)
-        except json.JSONDecodeError:
-            ws.send(json.dumps(_error_response("invalid_json", "Message must be valid JSON.")))
-            continue
-
-        command = message.get("command")
-        payload = message.get("payload", {})
-
-        if command == "connect":
-            ws.send(json.dumps(handle_connect(payload)))
-        elif command == "get_email_detail":
-            ws.send(json.dumps(handle_get_email_detail(payload)))
-        elif command == "classify_email":
-            ws.send(json.dumps(handle_classify_email(payload)))
-        elif command == "test_email":
-            ws.send(json.dumps(handle_test_email(payload)))
-        elif command == "clear_database":
-            ws.send(json.dumps(handle_clear_database(payload)))
-        elif command == "get_config":
-            ws.send(json.dumps(_success_response("config_loaded", {"config": load_config()})))
-        elif command == "save_config":
-            ws.send(json.dumps(handle_save_config(payload)))
-        else:
-            ws.send(json.dumps(_error_response("unknown_command", f"Unsupported command: {command}")))
 
 
 def handle_connect(payload: dict) -> dict:
@@ -113,6 +131,8 @@ def handle_get_email_detail(payload: dict) -> dict:
             ssl=bool(connection.get("ssl", True)),
         )
         email_detail = mailbox_client.fetch_email_detail(int(uid))
+        header_score = calculate_header_score(email_detail.get("headers", []))
+        email_detail["header_score"] = header_score
     except Exception as exc:
         return _error_response("email_detail", str(exc))
 
@@ -147,6 +167,17 @@ def handle_clear_database(payload: dict) -> dict:
         return _error_response("database_cleared", 'Database clear requires confirmation set to "yes" or "YES".')
 
     return _success_response("database_cleared", clear_database())
+
+
+def handle_analyze_ai(payload: dict) -> dict:
+    email_detail = _fetch_email_detail_by_uid(payload.get("uid"))
+    if isinstance(email_detail, dict) and email_detail.get("error"):
+        return _error_response("ai_analyzed", email_detail["error"])
+
+    result = analyze_spam_with_ai(email_detail)
+    if not result.get("success"):
+        return _error_response("ai_analyzed", result.get("error", "Unknown error"))
+    return _success_response("ai_analyzed", result)
 
 
 def _fetch_email_detail_by_uid(uid: int | None) -> dict:

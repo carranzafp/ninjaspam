@@ -7,12 +7,13 @@
   },
   "preferences": {
     "allowed_languages": [
-      "ES",
-      "IT"
+      "EN",
+      "ES"
     ],
     "allowed_countries": [
       "MX",
-      "IT"
+      "US",
+      "ES"
     ],
     "allow_links": true,
     "allow_undisclosed": false,

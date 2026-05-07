@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,8 +15,8 @@ SECRET_PATH = BASE_DIR / "secret.json"
 DEFAULT_CONNECTION = {
     "host": "mail.ando.mx",
     "port": 993,
-    "username": "tests-unir@ando.mx",
-    "password": "",
+    "username": os.environ.get("IMAP_USER", "user@example.com"),
+    "password": os.environ.get("IMAP_PASS", "password"),
     "ssl": True,
 }
 

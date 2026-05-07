@@ -4,224 +4,214 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NinjaSpam Mail Client</title>
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="styles.css?v=4" />
   </head>
   <body class="bg-body-tertiary">
-    <div class="container py-4" id="connect-view">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="card shadow-sm border-0">
-            <div class="card-body p-4 p-md-5">
-              <div class="text-center mb-4">
-                <img src="/logo.png" alt="Antispam Ninja" class="connect-logo img-fluid mb-3" />
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                  <h1 class="h3 mb-1">Connect to mailbox</h1>
-                  <p class="text-muted mb-0">Open the IMAP inbox and load the latest emails.</p>
-                </div>
-                <span class="badge text-bg-primary px-3 py-2">Bootstrap UI</span>
-              </div>
-
-              <form id="connect-form" class="row g-3">
-                <div class="col-md-6">
-                  <label for="host" class="form-label">IMAP Host</label>
-                  <input id="host" name="host" class="form-control" required />
-                </div>
-                <div class="col-md-3">
-                  <label for="port" class="form-label">Port</label>
-                  <input id="port" name="port" type="number" class="form-control" required />
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                  <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="ssl" checked />
-                    <label class="form-check-label" for="ssl">SSL</label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <label for="username" class="form-label">Username</label>
-                  <input id="username" name="username" class="form-control" required />
-                </div>
-                <div class="col-md-6">
-                  <label for="password" class="form-label">Password</label>
-                  <input id="password" name="password" type="password" class="form-control" required />
-                </div>
-                <div class="col-12">
-                  <div id="connect-status" class="alert d-none mb-0" role="alert"></div>
-                </div>
-                <div class="col-12 d-grid d-md-flex justify-content-md-end">
-                  <button type="submit" class="btn btn-primary px-4">Connect</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container-fluid d-none" id="app-view">
-      <div class="row min-vh-100">
-        <aside class="col-md-3 col-lg-2 bg-dark text-white p-4 sidebar">
+    <div class="container-fluid px-0" id="app-view">
+      <div class="row g-0 min-vh-100">
+        <aside class="col-md-3 col-lg-2 bg-dark text-white p-4 sidebar shadow">
           <div class="sidebar-brand mb-4 text-start">
-            <img src="/logo.png" alt="Antispam Ninja" class="sidebar-logo img-fluid" />
+            <img src="logo.png" alt="Antispam Ninja" class="sidebar-logo img-fluid" />
           </div>
           <div class="nav flex-column nav-pills gap-2">
-            <button class="nav-link active text-start" data-section-target="mail-section">Inbox</button>
-            <button class="nav-link text-start" data-section-target="config-section">Configuration</button>
-            <button class="nav-link text-start" data-section-target="debug-section">Debug</button>
+            <button class="nav-link active text-start rounded-3" data-section-target="mail-section">Inbox</button>
+            <button class="nav-link text-start rounded-3" data-section-target="config-section">Configuration</button>
+            <button class="nav-link text-start rounded-3" data-section-target="debug-section">Debug</button>
           </div>
-          <div class="small text-white-50 mt-4" id="mailbox-label"></div>
+          <div class="small text-white-50 mt-4 px-3" id="mailbox-label"></div>
         </aside>
 
-        <main class="col-md-9 col-lg-10 p-4 p-lg-5">
+        <main class="col-md-9 col-lg-10 p-0">
           <section id="mail-section" class="content-section">
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <div>
-                <h2 class="h3 mb-1">Inbox messages</h2>
-                <p class="text-muted mb-0">Latest emails loaded from the IMAP server.</p>
-              </div>
-              <button id="refresh-button" class="btn btn-outline-primary">Refresh inbox</button>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-hover align-middle bg-white shadow-sm rounded overflow-hidden">
-                <thead class="table-light">
-                  <tr>
-                    <th>Subject</th>
-                    <th>From</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody id="email-table-body">
-                  <tr>
-                    <td colspan="3" class="text-center text-muted py-4">No emails loaded yet.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="card shadow-sm border-0 mt-4 d-none" id="email-detail-panel">
-              <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                  <div>
-                    <h3 class="h5 mb-1" id="detail-subject">Email details</h3>
-                    <div class="text-muted small" id="detail-summary">Select an email to view its content.</div>
-                  </div>
+            <div class="p-4 p-lg-5">
+              <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                  <h2 class="h3 mb-1 fw-bold text-dark">Inbox messages</h2>
+                  <p class="text-muted mb-0">Latest emails loaded from the IMAP server.</p>
                 </div>
-                <ul class="nav nav-tabs card-header-tabs" id="email-detail-tabs">
-                  <li class="nav-item">
-                    <button class="nav-link active" type="button" data-detail-tab="body">Body</button>
-                  </li>
-                  <li class="nav-item">
-                    <button class="nav-link" type="button" data-detail-tab="details">Details</button>
-                  </li>
-                </ul>
+                <button id="refresh-button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">Refresh inbox</button>
               </div>
-              <div class="card-body p-4">
-                <div id="email-detail-status" class="alert d-none mb-3" role="alert"></div>
+              
+              <div class="table-responsive">
+                <table class="table table-hover align-middle bg-white shadow-sm rounded-4 overflow-hidden">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="py-3 px-4 border-0">Score</th>
+                      <th class="py-3 px-4 border-0">Subject</th>
+                      <th class="py-3 px-4 border-0">From</th>
+                      <th class="py-3 px-4 border-0">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="email-table-body">
+                    <tr>
+                      <td colspan="4" class="text-center text-muted py-5">No emails loaded yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-                <div id="detail-tab-body" class="detail-tab-content">
-                  <div class="d-flex flex-wrap gap-2 mb-3">
-                    <button id="mark-spam-button" type="button" class="btn btn-danger btn-sm">Mark as SPAM</button>
-                    <button id="mark-ham-button" type="button" class="btn btn-success btn-sm">Mark as HAM</button>
-                    <button id="test-email-button" type="button" class="btn btn-outline-secondary btn-sm">Test email</button>
-                  </div>
-                  <div id="email-body-content" class="email-body-content text-break">Select an email to view the body.</div>
+            <!-- Email Detail Overhaul -->
+            <div class="d-none bg-light pb-5" id="email-detail-panel">
+              <div class="hero-beach">
+                <h2 class="score-label mb-2" id="hero-subject">Wow! Perfecto, puedes enviar</h2>
+                <div class="score-container" id="hero-score-badge">
+                  10/10
+                </div>
+              </div>
+
+              <div class="container px-4 px-lg-5" style="margin-top: -30px; position: relative; z-index: 20;">
+                <div id="email-detail-status" class="alert d-none mb-4 shadow-sm" role="alert"></div>
+
+                <!-- Primary Actions: Mark as SPAM/HAM -->
+                <div class="d-flex flex-wrap justify-content-center gap-3 mb-4 p-3 bg-white shadow-sm rounded-4 border">
+                  <button id="mark-spam-button" type="button" class="btn btn-outline-danger btn-lg rounded-pill px-5 fw-bold shadow-sm">Mark as SPAM</button>
+                  <button id="mark-ham-button" type="button" class="btn btn-outline-success btn-lg rounded-pill px-5 fw-bold shadow-sm">Mark as HAM</button>
+                  <div class="w-100 text-center"><span class="text-muted small">Note: These buttons are for visual confirmation only.</span></div>
                 </div>
 
-                <div id="detail-tab-details" class="detail-tab-content d-none">
-                  <div class="row g-3 mb-4 small">
-                    <div class="col-md-6"><strong>From:</strong> <span id="detail-from"></span></div>
-                    <div class="col-md-6"><strong>To:</strong> <span id="detail-to"></span></div>
-                    <div class="col-md-6"><strong>CC:</strong> <span id="detail-cc"></span></div>
-                    <div class="col-md-6"><strong>Date:</strong> <span id="detail-date"></span></div>
-                    <div class="col-md-6"><strong>Message ID:</strong> <span id="detail-message-id"></span></div>
-                    <div class="col-md-6"><strong>Content type:</strong> <span id="detail-content-type"></span></div>
-                  </div>
-                  <div class="border rounded p-3 bg-light-subtle">
-                    <h4 class="h6 mb-3">Headers</h4>
-                    <pre id="email-headers-content" class="headers-view mb-0"></pre>
-                  </div>
+                <div class="d-flex flex-column gap-3" id="emailDetailsContainer">
+                  
+                  <!-- AI Analysis Panel -->
+                  <details class="bg-white shadow-sm rounded-4 overflow-hidden border" open>
+                    <summary class="fw-bold fs-5 text-primary bg-primary bg-opacity-10 p-4 border-bottom" style="cursor: pointer; list-style: none; position: relative;">
+                      ✨ AI Spam Analysis <span class="position-absolute end-0 me-4">⬇</span>
+                    </summary>
+                    <div class="p-4 text-center">
+                      <p class="text-muted mb-4">Analyze this email's probability of being spam using local AI.</p>
+                      <button id="analyze-ai-button" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold mb-3">Analyze with AI</button>
+                      
+                      <div id="ai-result-panel" class="d-none mt-4 p-4 rounded-4 bg-light text-start border">
+                        <div class="row align-items-center">
+                          <div class="col-md-3 text-center border-end">
+                            <div id="ai-probability-ring" class="ai-probability-ring bg-success">0%</div>
+                            <div class="mt-2 fw-semibold text-muted">Spam Probability</div>
+                          </div>
+                          <div class="col-md-9 px-4">
+                            <h5 class="fw-bold mb-2">AI Reasoning</h5>
+                            <p id="ai-reasoning" class="mb-0 text-secondary"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </details>
+
+                  <!-- Message Content Panel -->
+                  <details class="bg-white shadow-sm rounded-4 overflow-hidden border" open>
+                    <summary class="fw-bold fs-5 p-4 border-bottom bg-light" style="cursor: pointer; list-style: none; position: relative;">
+                      ✉️ Message Content <span class="position-absolute end-0 me-4">⬇</span>
+                    </summary>
+                    <div class="p-4">
+                      <div class="bg-white p-4 rounded-4 border shadow-sm">
+                         <div class="row g-3 mb-4 pb-3 border-bottom small text-muted">
+                          <div class="col-md-6"><strong class="text-dark">From:</strong> <span id="detail-from"></span></div>
+                          <div class="col-md-6"><strong class="text-dark">To:</strong> <span id="detail-to"></span></div>
+                          <div class="col-md-6"><strong class="text-dark">Date:</strong> <span id="detail-date"></span></div>
+                          <div class="col-md-6"><strong class="text-dark">Content-type:</strong> <span id="detail-content-type"></span></div>
+                        </div>
+                        <div id="email-body-content" class="email-body-content border-0 p-0">Select an email to view the body.</div>
+                      </div>
+                    </div>
+                  </details>
+
+                  <!-- Details and Scoring Panel -->
+                  <details class="bg-white shadow-sm rounded-4 overflow-hidden border">
+                    <summary class="fw-bold fs-5 p-4 border-bottom bg-light" style="cursor: pointer; list-style: none; position: relative;">
+                      🛡️ Security & Authentication Score <span class="position-absolute end-0 me-4">⬇</span>
+                    </summary>
+                    <div class="p-4 bg-light">
+                      <ul class="list-group list-group-flush rounded-3 border" id="score-details-list">
+                        <li class="list-group-item text-muted">Loading score details...</li>
+                      </ul>
+                    </div>
+                  </details>
+                  
+                  <!-- Raw Headers Panel -->
+                  <details class="shadow-sm rounded-4 overflow-hidden border bg-dark text-light">
+                    <summary class="fw-bold fs-5 p-4 border-bottom border-secondary" style="cursor: pointer; list-style: none; position: relative;">
+                      📋 Raw Headers <span class="position-absolute end-0 me-4">⬇</span>
+                    </summary>
+                    <div class="p-4 rounded-bottom-4">
+                      <pre id="email-headers-content" class="headers-view mb-0 small text-light text-opacity-75"></pre>
+                    </div>
+                  </details>
+
                 </div>
               </div>
             </div>
           </section>
 
-          <section id="config-section" class="content-section d-none">
+          <section id="config-section" class="content-section d-none p-4 p-lg-5">
+            <!-- (Config section left unchanged in logic, tweaked styles) -->
             <div class="mb-4">
-              <h2 class="h3 mb-1">Configuration</h2>
+              <h2 class="h3 mb-1 fw-bold">Configuration</h2>
               <p class="text-muted mb-0">Store user preferences in the local config file.</p>
             </div>
-
-            <div class="card shadow-sm border-0">
-              <div class="card-body">
+            <div class="card shadow-sm border-0 rounded-4">
+              <div class="card-body p-4">
                 <form id="config-form" class="row g-3">
                   <div class="col-md-6">
-                    <label for="allowed-languages" class="form-label">Allowed languages</label>
-                    <select id="allowed-languages" class="form-select multiselect-box" multiple></select>
-                    <div class="form-text">Use Ctrl/Cmd + click to select multiple language codes.</div>
+                    <label for="allowed-languages" class="form-label fw-semibold">Allowed languages</label>
+                    <select id="allowed-languages" class="form-select multiselect-box rounded-3" multiple></select>
                   </div>
                   <div class="col-md-6">
-                    <label for="allowed-countries" class="form-label">Allowed countries</label>
-                    <select id="allowed-countries" class="form-select multiselect-box" multiple></select>
-                    <div class="form-text">Stored as ISO country codes for future email metadata rules.</div>
+                    <label for="allowed-countries" class="form-label fw-semibold">Allowed countries</label>
+                    <select id="allowed-countries" class="form-select multiselect-box rounded-3" multiple></select>
                   </div>
                   <div class="col-md-6">
-                    <label for="duplicate-threshold" class="form-label">Duplicate subject alert</label>
-                    <input id="duplicate-threshold" type="number" min="1" class="form-control" />
+                    <label for="duplicate-threshold" class="form-label fw-semibold">Duplicate subject alert</label>
+                    <input id="duplicate-threshold" type="number" min="1" class="form-control rounded-3" />
                   </div>
                   <div class="col-md-3 d-flex align-items-end">
                     <div class="form-check form-switch mb-2">
                       <input id="allow-links" class="form-check-input" type="checkbox" />
-                      <label class="form-check-label" for="allow-links">Allow links</label>
+                      <label class="form-check-label fw-semibold ms-2" for="allow-links">Allow links</label>
                     </div>
                   </div>
                   <div class="col-md-3 d-flex align-items-end">
                     <div class="form-check form-switch mb-2">
                       <input id="allow-undisclosed" class="form-check-input" type="checkbox" />
-                      <label class="form-check-label" for="allow-undisclosed">Allow undisclosed</label>
+                      <label class="form-check-label fw-semibold ms-2" for="allow-undisclosed">Allow undisclosed</label>
                     </div>
                   </div>
                   <div class="col-12">
                     <div id="config-status" class="alert d-none mb-0" role="alert"></div>
                   </div>
-                  <div class="col-12 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-success">Save configuration</button>
+                  <div class="col-12 d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">Save configuration</button>
                   </div>
                 </form>
               </div>
             </div>
           </section>
 
-          <section id="debug-section" class="content-section d-none">
+          <section id="debug-section" class="content-section d-none p-4 p-lg-5">
             <div class="mb-4">
-              <h2 class="h3 mb-1">Debug</h2>
+              <h2 class="h3 mb-1 fw-bold">Debug</h2>
               <p class="text-muted mb-0">Danger zone utilities for local testing.</p>
             </div>
-
-            <div class="card shadow-sm border-0 border-danger-subtle">
-              <div class="card-body">
-                <h3 class="h5 text-danger">Clear local mail database</h3>
+            <div class="card shadow-sm border-0 border-danger-subtle rounded-4">
+              <div class="card-body p-4">
+                <h3 class="h5 text-danger fw-bold">Clear local mail database</h3>
                 <p class="text-muted">This removes all labeled email records from <code>maildatabase.json</code>.</p>
-                <div class="alert alert-warning">
-                  You will be asked to confirm twice before the database is cleared.
-                </div>
-                <div class="row g-3 align-items-end">
+                <div class="row g-3 align-items-end mt-2">
                   <div class="col-md-6">
-                    <label for="clear-database-confirmation" class="form-label">Type yes or YES to confirm</label>
-                    <input id="clear-database-confirmation" class="form-control" placeholder="yes" />
+                    <label for="clear-database-confirmation" class="form-label fw-semibold">Type yes or YES to confirm</label>
+                    <input id="clear-database-confirmation" class="form-control rounded-3" placeholder="yes" />
                   </div>
                   <div class="col-md-6 d-flex gap-2">
-                    <button id="clear-database-button" type="button" class="btn btn-outline-danger">Clear database</button>
+                    <button id="clear-database-button" type="button" class="btn btn-outline-danger rounded-pill px-4 fw-bold">Clear database</button>
                   </div>
                 </div>
-                <div id="debug-status" class="alert d-none mt-3 mb-0" role="alert"></div>
+                <div id="debug-status" class="alert d-none mt-4 mb-0" role="alert"></div>
               </div>
             </div>
           </section>
@@ -229,6 +219,8 @@
       </div>
     </div>
 
-    <script src="/app.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="app.js?v=5"></script>
   </body>
-  </html>
+</html>

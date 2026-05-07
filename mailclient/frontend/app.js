@@ -6,49 +6,18 @@ const state = {
 };
 
 const LANGUAGE_OPTIONS = [
-  { code: "EN", label: "English" },
-  { code: "ES", label: "Spanish" },
-  { code: "FR", label: "French" },
-  { code: "DE", label: "German" },
-  { code: "IT", label: "Italian" },
-  { code: "PT", label: "Portuguese" },
-  { code: "NL", label: "Dutch" },
-  { code: "RU", label: "Russian" },
-  { code: "JA", label: "Japanese" },
-  { code: "ZH", label: "Chinese" },
-  { code: "KO", label: "Korean" },
-  { code: "AR", label: "Arabic" },
-  { code: "HI", label: "Hindi" },
+  { code: "EN", label: "English" }, { code: "ES", label: "Spanish" },
+  { code: "FR", label: "French" }, { code: "DE", label: "German" },
+  { code: "IT", label: "Italian" }, { code: "PT", label: "Portuguese" },
 ];
 
 const COUNTRY_OPTIONS = [
-  { code: "MX", label: "Mexico" },
-  { code: "US", label: "United States" },
-  { code: "CA", label: "Canada" },
-  { code: "ES", label: "Spain" },
-  { code: "FR", label: "France" },
-  { code: "DE", label: "Germany" },
-  { code: "IT", label: "Italy" },
-  { code: "GB", label: "United Kingdom" },
-  { code: "BR", label: "Brazil" },
-  { code: "AR", label: "Argentina" },
-  { code: "CO", label: "Colombia" },
-  { code: "CL", label: "Chile" },
-  { code: "PE", label: "Peru" },
-  { code: "JP", label: "Japan" },
-  { code: "CN", label: "China" },
-  { code: "IN", label: "India" },
-  { code: "AU", label: "Australia" },
-  { code: "NL", label: "Netherlands" },
-  { code: "BE", label: "Belgium" },
-  { code: "CH", label: "Switzerland" },
+  { code: "MX", label: "Mexico" }, { code: "US", label: "United States" },
+  { code: "CA", label: "Canada" }, { code: "ES", label: "Spain" },
+  { code: "FR", label: "France" }, { code: "DE", label: "Germany" },
 ];
 
-const connectView = document.getElementById("connect-view");
 const appView = document.getElementById("app-view");
-const connectForm = document.getElementById("connect-form");
-const configForm = document.getElementById("config-form");
-const connectStatus = document.getElementById("connect-status");
 const configStatus = document.getElementById("config-status");
 const emailTableBody = document.getElementById("email-table-body");
 const mailboxLabel = document.getElementById("mailbox-label");
@@ -58,8 +27,12 @@ const emailDetailStatus = document.getElementById("email-detail-status");
 const debugStatus = document.getElementById("debug-status");
 const markSpamButton = document.getElementById("mark-spam-button");
 const markHamButton = document.getElementById("mark-ham-button");
-const testEmailButton = document.getElementById("test-email-button");
 const clearDatabaseButton = document.getElementById("clear-database-button");
+
+const analyzeAiButton = document.getElementById("analyze-ai-button");
+const aiResultPanel = document.getElementById("ai-result-panel");
+const aiProbabilityRing = document.getElementById("ai-probability-ring");
+const aiReasoning = document.getElementById("ai-reasoning");
 
 initialize();
 
@@ -71,65 +44,68 @@ function initialize() {
 }
 
 function connectSocket() {
-  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  state.socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
-
-  state.socket.addEventListener("open", () => {
-    sendCommand("get_config", {});
-  });
-
-  state.socket.addEventListener("message", (event) => {
-    const message = JSON.parse(event.data);
-    processResponse(message);
-  });
-
-  state.socket.addEventListener("close", () => {
-    showAlert(connectStatus, "Connection to server lost. Refresh the page.", "danger");
-  });
+  sendCommand("connect", {});
 }
 
 function bindEvents() {
-  connectForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const connection = readConnectionForm();
-    state.connection = connection;
-    showAlert(connectStatus, "Connecting to mailbox...", "info");
-    sendCommand("connect", { connection });
-  });
-
   refreshButton.addEventListener("click", () => {
     if (state.connection) {
       sendCommand("connect", { connection: state.connection });
     }
   });
 
-  configForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const preferences = readConfigForm();
-    sendCommand("save_config", { preferences });
-  });
+  const configForm = document.getElementById("config-form");
+  const clearDatabaseButton = document.getElementById("clear-database-button");
+
+  if (configForm) {
+    configForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const payload = {
+        allowed_languages: Array.from(document.getElementById("allowed-languages").selectedOptions).map((o) => o.value),
+        allowed_countries: Array.from(document.getElementById("allowed-countries").selectedOptions).map((o) => o.value),
+        duplicate_subject_threshold: parseInt(document.getElementById("duplicate-threshold").value, 10),
+        allow_links: document.getElementById("allow-links").checked,
+        allow_undisclosed: document.getElementById("allow-undisclosed").checked,
+      };
+      sendCommand("save_config", payload);
+    });
+  }
 
   document.querySelectorAll("[data-section-target]").forEach((button) => {
     button.addEventListener("click", () => setActiveSection(button.dataset.sectionTarget));
   });
 
-  markSpamButton.addEventListener("click", () => classifySelectedEmail("SPAM"));
-  markHamButton.addEventListener("click", () => classifySelectedEmail("HAM"));
-  testEmailButton.addEventListener("click", () => testSelectedEmail());
-  clearDatabaseButton.addEventListener("click", () => clearDatabaseWithConfirmation());
-
-  document.querySelectorAll("[data-detail-tab]").forEach((button) => {
-    button.addEventListener("click", () => setDetailTab(button.dataset.detailTab));
+  // Manual marking buttons now just show visual confirmation
+  markSpamButton.addEventListener("click", () => {
+    showAlert(emailDetailStatus, "Marked as SPAM visually (Database saving disabled).", "danger");
   });
+  
+  markHamButton.addEventListener("click", () => {
+    showAlert(emailDetailStatus, "Marked as HAM visually (Database saving disabled).", "success");
+  });
+
+  analyzeAiButton.addEventListener("click", () => {
+    if (!state.selectedEmailUid) return;
+    showAlert(emailDetailStatus, "Analyzing email with local AI...", "info");
+    aiResultPanel.classList.add("d-none");
+    sendCommand("analyze_ai", { uid: state.selectedEmailUid });
+  });
+
+  clearDatabaseButton.addEventListener("click", () => clearDatabaseWithConfirmation());
 }
 
-function sendCommand(command, payload) {
-  if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
-    showAlert(connectStatus, "WebSocket is not connected yet.", "danger");
-    return;
+async function sendCommand(command, payload) {
+  try {
+    const response = await fetch(`${window.location.pathname.replace(/\/$/, '')}/api/command`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ command, payload }),
+    });
+    const message = await response.json();
+    processResponse(message);
+  } catch (error) {
+    console.error("Fetch error:", error);
   }
-
-  state.socket.send(JSON.stringify({ command, payload }));
 }
 
 function processResponse(message) {
@@ -141,19 +117,17 @@ function processResponse(message) {
 
   if (message.event === "connect_result") {
     if (!message.success) {
-      showAlert(connectStatus, message.error || "Connection failed.", "danger");
       return;
     }
-
     state.config = message.config;
     state.connection = message.config.connection;
     populateForms(message.config);
     renderEmails(message.emails || []);
-    resetEmailDetailPanel();
-    mailboxLabel.textContent = message.config.connection.username;
-    connectView.classList.add("d-none");
-    appView.classList.remove("d-none");
-    showAlert(connectStatus, "Connected successfully.", "success");
+    emailDetailPanel.classList.add("d-none");
+    mailboxLabel.textContent = `Connected as: ${state.connection.username}`;
+    
+    // Load config and emails automatically
+    sendCommand("get_config", {});
     return;
   }
 
@@ -162,7 +136,6 @@ function processResponse(message) {
       showAlert(configStatus, message.error || "Could not save config.", "danger");
       return;
     }
-
     state.config = message.config;
     populateForms(message.config);
     showAlert(configStatus, "Configuration saved successfully.", "success");
@@ -174,40 +147,18 @@ function processResponse(message) {
       showAlert(emailDetailStatus, message.error || "Could not load email details.", "danger");
       return;
     }
-
     renderEmailDetail(message.email);
-    showAlert(emailDetailStatus, "Email details loaded.", "success");
+    showAlert(emailDetailStatus, "Email loaded.", "success");
     return;
   }
 
-  if (message.event === "email_classified") {
+  if (message.event === "ai_analyzed") {
     if (!message.success) {
-      showAlert(emailDetailStatus, message.error || "Could not label email.", "danger");
+      showAlert(emailDetailStatus, message.error || "Could not analyze email.", "danger");
       return;
     }
-
-    let actionText = `Email stored with label ${message.record?.label || "unknown"}.`;
-    let alertStyle = "success";
-
-    if (message.updated) {
-      actionText = `Existing email label updated to ${message.record?.label || "unknown"}.`;
-      alertStyle = "info";
-    } else if (message.duplicate) {
-      actionText = `Email already stored as ${message.record?.label || "label"}.`;
-      alertStyle = "warning";
-    }
-
-    showAlert(emailDetailStatus, `${actionText} Database records: ${message.database_count}.`, alertStyle);
-    return;
-  }
-
-  if (message.event === "email_tested") {
-    if (!message.success) {
-      showAlert(emailDetailStatus, message.error || "Could not test email.", "danger");
-      return;
-    }
-
-    showAlert(emailDetailStatus, `Stub model result: ${message.predicted_label} (${Math.round((message.confidence || 0) * 100)}% confidence).`, "info");
+    showAlert(emailDetailStatus, "AI Analysis complete.", "success");
+    renderAiResult(message);
     return;
   }
 
@@ -216,51 +167,46 @@ function processResponse(message) {
       showAlert(debugStatus, message.error || "Could not clear database.", "danger");
       return;
     }
-
     document.getElementById("clear-database-confirmation").value = "";
     showAlert(debugStatus, "Local mail database cleared successfully.", "success");
     return;
   }
 
-  if (!message.success) {
-    showAlert(connectStatus, message.error || "An unexpected error happened.", "danger");
+  if (!message.success && message.error) {
+    console.error("Server Error:", message.error);
   }
 }
 
 function populateForms(config) {
-  const { connection, preferences } = config;
+  // Only config form remains
+  const allowedLangs = document.getElementById("allowed-languages");
+  if (allowedLangs && config.preferences?.allowed_languages) {
+    Array.from(allowedLangs.options).forEach((opt) => {
+      opt.selected = config.preferences.allowed_languages.includes(opt.value);
+    });
+  }
 
-  document.getElementById("host").value = connection.host || "";
-  document.getElementById("port").value = connection.port || 993;
-  document.getElementById("username").value = connection.username || "";
-  document.getElementById("password").value = connection.password || "";
-  document.getElementById("ssl").checked = Boolean(connection.ssl);
+  const allowedCountries = document.getElementById("allowed-countries");
+  if (allowedCountries && config.preferences?.allowed_countries) {
+    Array.from(allowedCountries.options).forEach((opt) => {
+      opt.selected = config.preferences.allowed_countries.includes(opt.value);
+    });
+  }
 
-  setMultiSelectValues("allowed-languages", preferences.allowed_languages || []);
-  setMultiSelectValues("allowed-countries", preferences.allowed_countries || []);
-  document.getElementById("allow-links").checked = Boolean(preferences.allow_links);
-  document.getElementById("allow-undisclosed").checked = Boolean(preferences.allow_undisclosed);
-  document.getElementById("duplicate-threshold").value = preferences.duplicate_subject_threshold || 3;
-}
+  const dupThreshold = document.getElementById("duplicate-threshold");
+  if (dupThreshold && config.preferences?.duplicate_subject_threshold) {
+    dupThreshold.value = config.preferences.duplicate_subject_threshold;
+  }
 
-function readConnectionForm() {
-  return {
-    host: document.getElementById("host").value.trim(),
-    port: Number(document.getElementById("port").value),
-    username: document.getElementById("username").value.trim(),
-    password: document.getElementById("password").value,
-    ssl: document.getElementById("ssl").checked,
-  };
-}
+  const allowLinks = document.getElementById("allow-links");
+  if (allowLinks && config.preferences?.allow_links !== undefined) {
+    allowLinks.checked = config.preferences.allow_links;
+  }
 
-function readConfigForm() {
-  return {
-    allowed_languages: getMultiSelectValues("allowed-languages"),
-    allowed_countries: getMultiSelectValues("allowed-countries"),
-    allow_links: document.getElementById("allow-links").checked,
-    allow_undisclosed: document.getElementById("allow-undisclosed").checked,
-    duplicate_subject_threshold: Number(document.getElementById("duplicate-threshold").value) || 1,
-  };
+  const allowUndisclosed = document.getElementById("allow-undisclosed");
+  if (allowUndisclosed && config.preferences?.allow_undisclosed !== undefined) {
+    allowUndisclosed.checked = config.preferences.allow_undisclosed;
+  }
 }
 
 function populateSelectOptions(elementId, options) {
@@ -285,11 +231,7 @@ function renderEmails(emails) {
   state.selectedEmailUid = null;
 
   if (!emails.length) {
-    emailTableBody.innerHTML = `
-      <tr>
-        <td colspan="3" class="text-center text-muted py-4">No emails found in the inbox.</td>
-      </tr>
-    `;
+    emailTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">No emails found in the inbox.</td></tr>`;
     return;
   }
 
@@ -297,9 +239,10 @@ function renderEmails(emails) {
     .map(
       (email) => `
         <tr class="email-row" data-email-uid="${email.uid}">
-          <td>${escapeHtml(email.subject)}</td>
-          <td>${escapeHtml(email.from)}</td>
-          <td>${escapeHtml(email.date)}</td>
+          <td class="text-center"><span class="badge bg-secondary badge-score" id="table-score-${email.uid}">?</span></td>
+          <td class="fw-semibold">${escapeHtml(email.subject)}</td>
+          <td class="text-secondary">${escapeHtml(email.from)}</td>
+          <td class="text-secondary small">${escapeHtml(email.date)}</td>
         </tr>
       `
     )
@@ -312,55 +255,80 @@ function renderEmails(emails) {
 
 function selectEmail(uid, rowElement) {
   state.selectedEmailUid = Number(uid);
-
   document.querySelectorAll(".email-row").forEach((row) => {
     row.classList.toggle("table-active", row === rowElement);
   });
 
   emailDetailPanel.classList.remove("d-none");
-  setDetailTab("body");
-  document.getElementById("detail-subject").textContent = "Loading email...";
-  document.getElementById("detail-summary").textContent = "Fetching full body and details from the server.";
+  document.getElementById("hero-subject").textContent = "Loading email details...";
+  document.getElementById("hero-score-badge").textContent = "...";
   document.getElementById("email-body-content").textContent = "Loading...";
   document.getElementById("email-headers-content").textContent = "";
-  showAlert(emailDetailStatus, "Loading email details...", "info");
+  document.getElementById("score-details-list").innerHTML = '<li class="list-group-item text-muted">Loading...</li>';
+  aiResultPanel.classList.add("d-none");
+  
+  showAlert(emailDetailStatus, "Fetching full body and details from the server...", "info");
   sendCommand("get_email_detail", { uid: state.selectedEmailUid });
 }
 
 function renderEmailDetail(email) {
   emailDetailPanel.classList.remove("d-none");
-  document.getElementById("detail-subject").textContent = email.subject || "(No subject)";
-  document.getElementById("detail-summary").textContent = `${(email.from || []).join(", ") || "Unknown sender"} • ${email.date || "Unknown date"}`;
+  
+  const scoreData = email.header_score || { score: 0, details: [] };
+  
+  // Update Hero Section
+  document.getElementById("hero-subject").textContent = email.subject || "(No subject)";
+  document.getElementById("hero-score-badge").textContent = `${scoreData.score}/10`;
+  
+  // Update table badge
+  const tableBadge = document.getElementById(`table-score-${email.uid}`);
+  if (tableBadge) {
+    tableBadge.textContent = scoreData.score;
+    tableBadge.className = `badge badge-score ${scoreData.score >= 7 ? 'bg-success' : scoreData.score >= 4 ? 'bg-warning' : 'bg-danger'}`;
+  }
+
+  // Update Score Details Panel
+  const detailsHtml = scoreData.details.map(d => `
+    <li class="list-group-item d-flex justify-content-between align-items-start py-3">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">${d.rule}</div>
+        <div class="small text-muted">${d.desc}</div>
+      </div>
+      <span class="badge ${d.points > 0 ? 'bg-success' : 'bg-danger'} rounded-pill">${d.points > 0 ? '+' : ''}${d.points}</span>
+    </li>
+  `).join("");
+  document.getElementById("score-details-list").innerHTML = detailsHtml || '<li class="list-group-item">No security headers analyzed.</li>';
+
+  // Update Body Panel
   document.getElementById("email-body-content").textContent = email.body?.preferred || "No body content available.";
   document.getElementById("detail-from").textContent = (email.from || []).join(", ") || "—";
   document.getElementById("detail-to").textContent = (email.to || []).join(", ") || "—";
-  document.getElementById("detail-cc").textContent = (email.cc || []).join(", ") || "—";
   document.getElementById("detail-date").textContent = email.date || "—";
-  document.getElementById("detail-message-id").textContent = email.message_id || "—";
   document.getElementById("detail-content-type").textContent = email.content_type || "—";
+  
+  // Update Headers Panel
   document.getElementById("email-headers-content").textContent = (email.headers || [])
     .map((header) => `${header.name}: ${header.value}`)
     .join("\n");
+    
+  // Reset AI panel
+  aiResultPanel.classList.add("d-none");
 }
 
-function classifySelectedEmail(label) {
-  if (!state.selectedEmailUid) {
-    showAlert(emailDetailStatus, "Select an email first.", "warning");
-    return;
+function renderAiResult(data) {
+  aiResultPanel.classList.remove("d-none");
+  const prob = data.spam_probability;
+  aiProbabilityRing.textContent = `${prob}%`;
+  
+  if (prob > 75) {
+    aiProbabilityRing.className = "ai-probability-ring bg-danger";
+  } else if (prob > 35) {
+    aiProbabilityRing.className = "ai-probability-ring bg-warning text-dark";
+  } else {
+    aiProbabilityRing.className = "ai-probability-ring bg-success";
   }
-
-  showAlert(emailDetailStatus, `Saving email as ${label}...`, "info");
-  sendCommand("classify_email", { uid: state.selectedEmailUid, label });
-}
-
-function testSelectedEmail() {
-  if (!state.selectedEmailUid) {
-    showAlert(emailDetailStatus, "Select an email first.", "warning");
-    return;
-  }
-
-  showAlert(emailDetailStatus, "Testing email with stubbed model...", "info");
-  sendCommand("test_email", { uid: state.selectedEmailUid });
+  
+  document.getElementById("ai-reasoning").textContent = data.reason || "No reasoning provided by AI.";
 }
 
 function clearDatabaseWithConfirmation() {
@@ -369,49 +337,14 @@ function clearDatabaseWithConfirmation() {
     showAlert(debugStatus, 'Type "yes" or "YES" first.', "warning");
     return;
   }
-
-  const firstConfirmation = window.confirm("Are you sure you want to clear the local mail database?");
-  if (!firstConfirmation) {
-    showAlert(debugStatus, "Database clear cancelled.", "secondary");
-    return;
-  }
-
-  const secondConfirmation = window.confirm("This action is permanent for the JSON database. Continue?");
-  if (!secondConfirmation) {
-    showAlert(debugStatus, "Database clear cancelled on second confirmation.", "secondary");
-    return;
-  }
-
   showAlert(debugStatus, "Clearing database...", "info");
   sendCommand("clear_database", { confirmation: typedConfirmation });
-}
-
-function resetEmailDetailPanel() {
-  emailDetailPanel.classList.add("d-none");
-  emailDetailStatus.className = "alert d-none mb-3";
-  emailDetailStatus.textContent = "";
-  document.getElementById("detail-subject").textContent = "Email details";
-  document.getElementById("detail-summary").textContent = "Select an email to view its content.";
-  document.getElementById("email-body-content").textContent = "Select an email to view the body.";
-  document.getElementById("email-headers-content").textContent = "";
-  setDetailTab("body");
-}
-
-function setDetailTab(tabName) {
-  document.querySelectorAll("[data-detail-tab]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.detailTab === tabName);
-  });
-
-  document.querySelectorAll(".detail-tab-content").forEach((panel) => {
-    panel.classList.toggle("d-none", panel.id !== `detail-tab-${tabName}`);
-  });
 }
 
 function setActiveSection(sectionId) {
   document.querySelectorAll(".content-section").forEach((section) => {
     section.classList.toggle("d-none", section.id !== sectionId);
   });
-
   document.querySelectorAll("[data-section-target]").forEach((button) => {
     button.classList.toggle("active", button.dataset.sectionTarget === sectionId);
   });
@@ -419,7 +352,7 @@ function setActiveSection(sectionId) {
 
 function showAlert(target, message, style) {
   target.textContent = message;
-  target.className = `alert alert-${style}`;
+  target.className = `alert alert-${style} shadow-sm`;
 }
 
 function escapeHtml(value) {
