@@ -14,7 +14,7 @@ load_dotenv()
 
 from backend.config import DEFAULT_CONFIG, load_config, save_config
 from backend.imap_service import ImapMailboxClient
-from backend.mail_database import clear_database, ensure_database, store_labeled_email, test_email_with_stub
+from backend.mail_database import clear_database, ensure_database, test_email_with_stub, get_all_scores, update_email_scores, get_email_id
 from backend.email_analyzer import calculate_header_score
 from backend.ai_service import analyze_spam_with_ai
 
@@ -61,8 +61,8 @@ def api_command():
         return jsonify(handle_connect(payload))
     elif command == "get_email_detail":
         return jsonify(handle_get_email_detail(payload))
-    elif command == "classify_email":
-        return jsonify(handle_classify_email(payload))
+    elif command == "mark_mitl":
+        return jsonify(handle_mark_mitl(payload))
     elif command == "test_email":
         return jsonify(handle_test_email(payload))
     elif command == "clear_database":
@@ -98,6 +98,16 @@ def handle_connect(payload: dict) -> dict:
             ssl=bool(connection.get("ssl", True)),
         )
         emails = mailbox_client.fetch_inbox_emails()
+        
+        # Attach scores from the database
+        scores_db = get_all_scores()
+        for email in emails:
+            eid = get_email_id(email)
+            db_record = scores_db.get(eid, {})
+            email["tech_score"] = db_record.get("tech_score")
+            email["ai_score"] = db_record.get("ai_score")
+            email["mitl_tag"] = db_record.get("mitl_tag")
+            
     except Exception as exc:
         return _error_response("connect_failed", str(exc))
 
@@ -136,23 +146,27 @@ def handle_get_email_detail(payload: dict) -> dict:
         email_detail = mailbox_client.fetch_email_detail(int(uid))
         header_score = calculate_header_score(email_detail.get("headers", []))
         email_detail["header_score"] = header_score
+        
+        # Save tech_score to the database automatically
+        update_email_scores(email_detail, tech_score=header_score["score"])
+        
     except Exception as exc:
         return _error_response("email_detail", str(exc))
 
     return _success_response("email_detail", {"email": email_detail})
 
 
-def handle_classify_email(payload: dict) -> dict:
+def handle_mark_mitl(payload: dict) -> dict:
     label = (payload.get("label") or "").upper()
     if label not in {"SPAM", "HAM"}:
-        return _error_response("email_classified", "Label must be SPAM or HAM.")
+        return _error_response("mitl_marked", "Label must be SPAM or HAM.")
 
     email_detail = _fetch_email_detail_by_uid(payload.get("uid"))
     if isinstance(email_detail, dict) and email_detail.get("error"):
-        return _error_response("email_classified", email_detail["error"])
+        return _error_response("mitl_marked", email_detail["error"])
 
-    result = store_labeled_email(email_detail, label)
-    return _success_response("email_classified", result)
+    result = update_email_scores(email_detail, mitl_tag=label)
+    return _success_response("mitl_marked", {"mitl_tag": label})
 
 
 def handle_test_email(payload: dict) -> dict:
@@ -180,6 +194,10 @@ def handle_analyze_ai(payload: dict) -> dict:
     result = analyze_spam_with_ai(email_detail)
     if not result.get("success"):
         return _error_response("ai_analyzed", result.get("error", "Unknown error"))
+        
+    # Save the AI score
+    update_email_scores(email_detail, ai_score=result["spam_probability"])
+        
     return _success_response("ai_analyzed", result)
 
 

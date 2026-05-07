@@ -41,6 +41,7 @@ class ImapMailboxClient:
                 emails.append(
                     {
                         "uid": uid,
+                        "message_id": _to_text(envelope.message_id),
                         "subject": _decode_subject(envelope.subject),
                         "from": from_address,
                         "date": _format_date(envelope.date),

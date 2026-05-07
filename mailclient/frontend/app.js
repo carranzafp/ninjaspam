@@ -75,14 +75,28 @@ function bindEvents() {
     button.addEventListener("click", () => setActiveSection(button.dataset.sectionTarget));
   });
 
-  // Manual marking buttons now just show visual confirmation
+  // Manual marking buttons
   markSpamButton.addEventListener("click", () => {
-    showAlert(emailDetailStatus, "Marked as SPAM visually (Database saving disabled).", "danger");
+    if (!state.selectedEmailUid) return;
+    showAlert(emailDetailStatus, "Marking as SPAM...", "info");
+    sendCommand("mark_mitl", { uid: state.selectedEmailUid, label: "SPAM" });
   });
   
   markHamButton.addEventListener("click", () => {
-    showAlert(emailDetailStatus, "Marked as HAM visually (Database saving disabled).", "success");
+    if (!state.selectedEmailUid) return;
+    showAlert(emailDetailStatus, "Marking as HAM...", "info");
+    sendCommand("mark_mitl", { uid: state.selectedEmailUid, label: "HAM" });
   });
+
+  const recalcButton = document.getElementById("recalculate-tech-score-button");
+  if (recalcButton) {
+    recalcButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!state.selectedEmailUid) return;
+      showAlert(emailDetailStatus, "Recalculating tech score...", "info");
+      sendCommand("get_email_detail", { uid: state.selectedEmailUid });
+    });
+  }
 
   analyzeAiButton.addEventListener("click", () => {
     if (!state.selectedEmailUid) return;
@@ -157,8 +171,37 @@ function processResponse(message) {
       showAlert(emailDetailStatus, message.error || "Could not analyze email.", "danger");
       return;
     }
-    showAlert(emailDetailStatus, "AI Analysis complete.", "success");
+    showAlert(emailDetailStatus, "AI Analysis complete and saved.", "success");
     renderAiResult(message);
+    // Update AI badge in list if it exists
+    const row = document.querySelector(`.email-row[data-email-uid="${state.selectedEmailUid}"]`);
+    if (row) {
+        const badge = row.querySelector('.badge-score-ai');
+        if (badge) {
+            const prob = message.spam_probability;
+            badge.textContent = prob;
+            badge.className = `badge badge-score-ai ${prob > 75 ? 'bg-danger' : prob > 35 ? 'bg-warning text-dark' : 'bg-success'}`;
+        }
+    }
+    return;
+  }
+
+  if (message.event === "mitl_marked") {
+    if (!message.success) {
+      showAlert(emailDetailStatus, message.error || "Could not save tag.", "danger");
+      return;
+    }
+    const tag = message.mitl_tag;
+    showAlert(emailDetailStatus, `Email successfully tagged as ${tag} and saved to database.`, "success");
+    // Update MITL badge in list if it exists
+    const row = document.querySelector(`.email-row[data-email-uid="${state.selectedEmailUid}"]`);
+    if (row) {
+        const badge = row.querySelector('.badge-score-mitl');
+        if (badge) {
+            badge.textContent = tag;
+            badge.className = `badge badge-score-mitl ${tag === 'SPAM' ? 'bg-danger' : 'bg-success'}`;
+        }
+    }
     return;
   }
 
@@ -237,14 +280,27 @@ function renderEmails(emails) {
 
   emailTableBody.innerHTML = emails
     .map(
-      (email) => `
+      (email) => {
+        const ts = email.tech_score !== undefined && email.tech_score !== null ? email.tech_score : "?";
+        const tsClass = ts === "?" ? "bg-secondary" : (ts >= 7 ? "bg-success" : (ts >= 4 ? "bg-warning text-dark" : "bg-danger"));
+        
+        const ais = email.ai_score !== undefined && email.ai_score !== null ? email.ai_score : "?";
+        const aisClass = ais === "?" ? "bg-secondary" : (ais > 75 ? "bg-danger" : (ais > 35 ? "bg-warning text-dark" : "bg-success"));
+        
+        const mitl = email.mitl_tag || "?";
+        const mitlClass = mitl === "?" ? "bg-secondary" : (mitl === "SPAM" ? "bg-danger" : "bg-success");
+        
+        return `
         <tr class="email-row" data-email-uid="${email.uid}">
-          <td class="text-center"><span class="badge bg-secondary badge-score" id="table-score-${email.uid}">?</span></td>
+          <td class="text-center"><span class="badge ${tsClass} badge-score-tech" id="table-score-tech-${email.uid}">${ts}</span></td>
+          <td class="text-center"><span class="badge ${aisClass} badge-score-ai" id="table-score-ai-${email.uid}">${ais}</span></td>
+          <td class="text-center"><span class="badge ${mitlClass} badge-score-mitl" id="table-score-mitl-${email.uid}">${mitl}</span></td>
           <td class="fw-semibold">${escapeHtml(email.subject)}</td>
           <td class="text-secondary">${escapeHtml(email.from)}</td>
           <td class="text-secondary small">${escapeHtml(email.date)}</td>
         </tr>
       `
+      }
     )
     .join("");
 
@@ -280,11 +336,11 @@ function renderEmailDetail(email) {
   document.getElementById("hero-subject").textContent = email.subject || "(No subject)";
   document.getElementById("hero-score-badge").textContent = `${scoreData.score}/10`;
   
-  // Update table badge
-  const tableBadge = document.getElementById(`table-score-${email.uid}`);
+  // Update table badge for Tech Score
+  const tableBadge = document.getElementById(`table-score-tech-${email.uid}`);
   if (tableBadge) {
     tableBadge.textContent = scoreData.score;
-    tableBadge.className = `badge badge-score ${scoreData.score >= 7 ? 'bg-success' : scoreData.score >= 4 ? 'bg-warning' : 'bg-danger'}`;
+    tableBadge.className = `badge badge-score-tech ${scoreData.score >= 7 ? 'bg-success' : scoreData.score >= 4 ? 'bg-warning text-dark' : 'bg-danger'}`;
   }
 
   // Update Score Details Panel
