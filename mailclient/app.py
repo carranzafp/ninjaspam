@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+# Proyecto NinjaSpam - Entrega 1
+# Archivo principal de rutas y configuración del servidor Flask
+
 import json
 import os
 from pathlib import Path
