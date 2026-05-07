@@ -10,11 +10,9 @@ El sistema permite conectarse automáticamente a una cuenta de correo mediante I
 
 Este proyecto fue desarrollado como parte de una actividad académica.
 
-- **Alumno 1 — Product Owner / Idea Original:** Pablo Emmanuel Caballero Sagredo (SinPECS)
-- **Alumno 2 — Desarrollo:** Francisco Eduardo Pérez Carranza
-- **Alumno 3 — Calidad y Documentación:** Jonathan André Rojas Baron
-
-> Nota: Los correos electrónicos institucionales o de contacto oficial deberán agregarse en el formato de entrega correspondiente, conforme a los lineamientos solicitados por la institución.
+- **Alumno 1 — Product Owner / Idea Original:** Pablo Emmanuel Caballero Sagredo (SinPECS) - sinpecs@gmail.com
+- **Alumno 2 — Desarrollo:** Francisco Eduardo Pérez Carranza - bpasfepcmexico001@gmail.com
+- **Alumno 3 — Calidad y Documentación:** Jonathan André Rojas Baron - jonyrojas88jarb@gmail.com
 
 ---
 
