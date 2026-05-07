@@ -20,15 +20,20 @@ Este proyecto fue desarrollado como parte de una actividad académica.
 
 NinjaSpam funciona como un cliente web de correo electrónico con capacidades de análisis antispam de última generación. Su objetivo es demostrar cómo una aplicación web puede conectarse a un buzón mediante IMAP, recuperar correos y procesar su contenido para apoyar la revisión de mensajes potencialmente sospechosos.
 
-El proyecto contempla:
+## Fases del Proyecto (Entregas Académicas)
 
-- Conexión a buzones de correo mediante IMAP.
-- Interfaz web moderna con diseño "Glassmorphism" (tema de playa).
-- Autenticación básica de seguridad para proteger el acceso a la herramienta.
-- Carga y visualización de mensajes recientes de la bandeja de entrada.
-- Procesamiento de correos para análisis de cabeceras de seguridad (SPF, DKIM, etc.).
-- Integración con servicios locales de IA (Ollama) para evaluación y razonamiento probabilístico de spam.
-- Comunicación robusta Cliente-Servidor mediante API REST (Fetch).
+El desarrollo de este sistema está estructurado en tres entregas principales que marcan la evolución del proyecto:
+
+### Entrega 1: Fundamentos y Análisis Estático (Estado Actual)
+Desarrollo de un cliente de correo funcional y una interfaz web con temática moderna. Esta fase incluye la conexión IMAP, lectura de la bandeja de entrada, autenticación básica e integración de dos motores de análisis independientes:
+- **Motor Técnico:** Revisión matemática de metadatos y cabeceras de seguridad (SPF, DKIM, DMARC, SpamAssassin, Message-ID).
+- **Motor Semántico Base:** Conexión con un LLM local (Ollama) mediante prompts estructurados para otorgar una calificación probabilística inicial de spam.
+
+### Entrega 2: NLP y Aprendizaje Automático
+Los botones de **Mark as SPAM** y **Mark as HAM** integrarán Procesamiento del Lenguaje Natural (NLP) y Aprendizaje Automático. Python se utilizará para extraer, limpiar y analizar los elementos principales del correo electrónico, como asunto, cuerpo, remitente, enlaces, encabezados y señales técnicas. El Procesamiento del Lenguaje Natural permitirá comprender el contexto, la intención, la estructura semántica y los patrones lingüísticos del mensaje, superando las limitaciones de reglas estáticas y expresiones regulares. El Aprendizaje Automático se aplicará en la creación de un modelo de clasificación de correos capaz de identificar mensajes como SPAM o HAM, evolucionando mediante la retroalimentación continua del usuario y del administrador. Cada confirmación manual, realizada mediante acciones como “Mark as SPAM” o “Mark as HAM”, se registrará como dato supervisado para fortalecer el entrenamiento del modelo y mejorar progresivamente la precisión del análisis antispam.
+
+### Entrega 3: Versión Beta
+Se contempla entregar un sistema "funcional" con un depurador integrado (debug básico) al que llamaremos versión "Beta". Esta entrega cerrará el ciclo del aprendizaje supervisado y consolidará la aplicación para su evaluación final.
 
 ---
 
