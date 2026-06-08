@@ -97,7 +97,7 @@ def handle_connect(payload: dict) -> dict:
             password=connection["password"],
             ssl=bool(connection.get("ssl", True)),
         )
-        emails = mailbox_client.fetch_inbox_emails()
+        emails = mailbox_client.fetch_inbox_emails(limit=1000)
         
         # Attach scores from the database
         scores_db = get_all_scores()

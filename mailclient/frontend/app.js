@@ -3,6 +3,9 @@ const state = {
   connection: null,
   config: null,
   selectedEmailUid: null,
+  emails: [],
+  currentPage: 1,
+  pageSize: 10,
 };
 
 const LANGUAGE_OPTIONS = [
@@ -271,14 +274,28 @@ function getMultiSelectValues(elementId) {
 }
 
 function renderEmails(emails) {
+  state.emails = emails || [];
   state.selectedEmailUid = null;
+  state.currentPage = 1;
+  renderCurrentPage();
+}
+
+function renderCurrentPage() {
+  const emails = state.emails;
+  const start = (state.currentPage - 1) * state.pageSize;
+  const end = start + state.pageSize;
+  const pageEmails = emails.slice(start, end);
+  
+  const counterEl = document.getElementById("inbox-counter");
+  if (counterEl) counterEl.textContent = emails.length;
 
   if (!emails.length) {
-    emailTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">No emails found in the inbox.</td></tr>`;
+    emailTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-5">No emails found in the inbox.</td></tr>`;
+    document.getElementById("pagination-nav").classList.add("d-none");
     return;
   }
 
-  emailTableBody.innerHTML = emails
+  emailTableBody.innerHTML = pageEmails
     .map(
       (email) => {
         const ts = email.tech_score !== undefined && email.tech_score !== null ? email.tech_score : "?";
@@ -306,6 +323,62 @@ function renderEmails(emails) {
 
   document.querySelectorAll(".email-row").forEach((row) => {
     row.addEventListener("click", () => selectEmail(row.dataset.emailUid, row));
+  });
+  
+  renderPaginationControls();
+}
+
+function renderPaginationControls() {
+  const totalPages = Math.ceil(state.emails.length / state.pageSize);
+  const nav = document.getElementById("pagination-nav");
+  const controls = document.getElementById("pagination-controls");
+  
+  if (totalPages <= 1) {
+    nav.classList.add("d-none");
+    return;
+  }
+  
+  nav.classList.remove("d-none");
+  let html = '';
+  
+  html += `<li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}">
+             <a class="page-link shadow-sm" href="#" data-page="${state.currentPage - 1}">Previous</a>
+           </li>`;
+           
+  function getPageItems(c, t) {
+    if (t <= 7) return Array.from({length: t}, (_, i) => i + 1);
+    if (c <= 4) return [1, 2, 3, 4, 5, '...', t];
+    if (c >= t - 3) return [1, '...', t - 4, t - 3, t - 2, t - 1, t];
+    return [1, '...', c - 1, c, c + 1, '...', t];
+  }
+  
+  const items = getPageItems(state.currentPage, totalPages);
+  
+  for (const item of items) {
+    if (item === '...') {
+      html += `<li class="page-item disabled"><span class="page-link shadow-sm">...</span></li>`;
+    } else {
+      html += `<li class="page-item ${state.currentPage === item ? 'active' : ''}">
+                 <a class="page-link shadow-sm" href="#" data-page="${item}">${item}</a>
+               </li>`;
+    }
+  }
+  
+  html += `<li class="page-item ${state.currentPage === totalPages ? 'disabled' : ''}">
+             <a class="page-link shadow-sm" href="#" data-page="${state.currentPage + 1}">Next</a>
+           </li>`;
+           
+  controls.innerHTML = html;
+  
+  controls.querySelectorAll(".page-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const page = parseInt(e.target.dataset.page);
+      if (!isNaN(page) && page >= 1 && page <= totalPages && page !== state.currentPage) {
+        state.currentPage = page;
+        renderCurrentPage();
+      }
+    });
   });
 }
 

@@ -26,55 +26,77 @@ class ImapMailboxClient:
             if not latest_ids:
                 return []
 
-            response = client.fetch(latest_ids, [b"ENVELOPE"])
+            batch_size = 50
             emails = []
+            
+            for i in range(0, len(latest_ids), batch_size):
+                batch_ids = latest_ids[i:i + batch_size]
+                response = client.fetch(batch_ids, [b"ENVELOPE"])
+                
+                for uid in batch_ids:
+                    if uid not in response:
+                        continue
+                    envelope = response[uid][b"ENVELOPE"]
+                    from_address = ""
+                    if envelope.from_:
+                        sender = envelope.from_[0]
+                        mailbox = _to_text(sender.mailbox)
+                        host = _to_text(sender.host)
+                        from_address = f"{mailbox}@{host}" if mailbox and host else ""
 
-            for uid in reversed(latest_ids):
-                envelope = response[uid][b"ENVELOPE"]
-                from_address = ""
-                if envelope.from_:
-                    sender = envelope.from_[0]
-                    mailbox = _to_text(sender.mailbox)
-                    host = _to_text(sender.host)
-                    from_address = f"{mailbox}@{host}" if mailbox and host else ""
+                    emails.append(
+                        {
+                            "uid": uid,
+                            "message_id": _to_text(envelope.message_id),
+                            "subject": _decode_subject(envelope.subject),
+                            "from": from_address,
+                            "date": _format_date(envelope.date),
+                        }
+                    )
 
-                emails.append(
-                    {
-                        "uid": uid,
-                        "message_id": _to_text(envelope.message_id),
-                        "subject": _decode_subject(envelope.subject),
-                        "from": from_address,
-                        "date": _format_date(envelope.date),
-                    }
-                )
-
+            emails.reverse()
             return emails
 
     def fetch_email_detail(self, uid: int) -> dict:
-        with IMAPClient(self.host, port=self.port, ssl=self.ssl) as client:
-            client.login(self.username, self.password)
-            client.select_folder("INBOX")
-            response = client.fetch([uid], [b"RFC822", b"ENVELOPE", b"BODYSTRUCTURE"])
+        try:
+            with IMAPClient(self.host, port=self.port, ssl=self.ssl) as client:
+                client.login(self.username, self.password)
+                client.select_folder("INBOX")
+                response = client.fetch([uid], [b"BODY.PEEK[]"])
 
-            if uid not in response:
-                raise ValueError(f"Email with UID {uid} was not found.")
+                if uid not in response:
+                    raise ValueError(f"Email with UID {uid} was not found.")
 
-            message_bytes = response[uid][b"RFC822"]
-            parsed_message = message_from_bytes(message_bytes, policy=default)
-            envelope = response[uid].get(b"ENVELOPE")
+                message_bytes = response[uid].get(b"BODY[]", b"")
+        except Exception as e:
+            if "EOF" in str(e):
+                # Fallback to headers only if full payload kills connection
+                with IMAPClient(self.host, port=self.port, ssl=self.ssl) as client2:
+                    client2.login(self.username, self.password)
+                    client2.select_folder("INBOX")
+                    response = client2.fetch([uid], [b"BODY.PEEK[HEADER]"])
+                    if uid not in response:
+                        raise ValueError(f"Email with UID {uid} was not found.")
+                    message_bytes = response[uid].get(b"BODY[HEADER]", b"")
+                    message_bytes += b"\r\n\r\n[Warning: El servidor IMAP rechazo transmitir el contenido completo de este correo, probablemente por un archivo adjunto muy grande o bloqueo de antivirus. Solo se pudieron recuperar los encabezados.]"
+            else:
+                raise
 
-            return {
-                "uid": uid,
-                "subject": _decode_subject(parsed_message.get("Subject") or (envelope.subject if envelope else None)),
-                "from": _addresses_to_list(parsed_message.get_all("From", [])),
-                "to": _addresses_to_list(parsed_message.get_all("To", [])),
-                "cc": _addresses_to_list(parsed_message.get_all("Cc", [])),
-                "date": _to_text(parsed_message.get("Date") or (envelope.date if envelope else "")),
-                "message_id": _to_text(parsed_message.get("Message-ID")),
-                "content_type": parsed_message.get_content_type(),
-                "body": _extract_body(parsed_message),
-                "headers": [{"name": key, "value": _to_text(value)} for key, value in parsed_message.items()],
-            }
+        parsed_message = message_from_bytes(message_bytes, policy=default)
+        envelope = None
+
+        return {
+            "uid": uid,
+            "subject": _decode_subject(parsed_message.get("Subject") or (envelope.subject if envelope else None)),
+            "from": _addresses_to_list(parsed_message.get_all("From", [])),
+            "to": _addresses_to_list(parsed_message.get_all("To", [])),
+            "cc": _addresses_to_list(parsed_message.get_all("Cc", [])),
+            "date": _to_text(parsed_message.get("Date") or (envelope.date if envelope else "")),
+            "message_id": _to_text(parsed_message.get("Message-ID")),
+            "content_type": parsed_message.get_content_type(),
+            "body": _extract_body(parsed_message),
+            "headers": [{"name": key, "value": _to_text(value)} for key, value in parsed_message.items()],
+        }
 
 
 def _to_text(value) -> str:

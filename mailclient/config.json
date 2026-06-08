@@ -1,8 +1,8 @@
 {
   "connection": {
-    "host": "mail.ando.mx",
+    "host": "lab.sinpecs.com",
     "port": 993,
-    "username": "tests-unir@ando.mx",
+    "username": "unir@lab.sinpecs.com",
     "ssl": true
   },
   "preferences": {

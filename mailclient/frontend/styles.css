@@ -88,7 +88,7 @@ body {
 
 .connect-logo { max-width: 300px; width: 100%; height: auto; }
 .sidebar-brand { padding-top: 0.25rem; }
-.sidebar-logo { max-width: 190px; width: 100%; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+.sidebar-logo { max-width: 190px; width: 100%; height: auto; }
 .sidebar { min-height: 100vh; background: #191919 !important; }
 .nav-pills .nav-link { color: rgba(255, 255, 255, 0.7); border: 1px solid transparent; font-weight: 500; transition: all 0.2s; }
 .nav-pills .nav-link:hover { color: white; background: rgba(255,255,255,0.1); }

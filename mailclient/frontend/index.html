@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NinjaSpam Mail Client</title>
+    <base href="/unir/ninjaspam/" />
+    <link rel="icon" href="data:," />
     <!-- Google Fonts for premium typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link
@@ -22,7 +24,10 @@
             <img src="logo.png" alt="Antispam Ninja" class="sidebar-logo img-fluid" />
           </div>
           <div class="nav flex-column nav-pills gap-2">
-            <button class="nav-link active text-start rounded-3" data-section-target="mail-section">Inbox</button>
+            <button class="nav-link active text-start rounded-3 d-flex justify-content-between align-items-center" data-section-target="mail-section">
+              Inbox
+              <span id="inbox-counter" class="badge bg-secondary rounded-pill">0</span>
+            </button>
             <button class="nav-link text-start rounded-3" data-section-target="config-section">Configuration</button>
             <button class="nav-link text-start rounded-3" data-section-target="debug-section">Debug</button>
           </div>
@@ -41,7 +46,7 @@
               </div>
               
               <div class="table-responsive">
-                <table class="table table-hover align-middle bg-white shadow-sm rounded-4 overflow-hidden">
+                <table class="table table-hover align-middle bg-white shadow-sm rounded-4 overflow-hidden mb-0">
                   <thead class="table-light">
                     <tr>
                       <th class="py-3 px-4 border-0 text-center">Score Técnico</th>
@@ -59,6 +64,12 @@
                   </tbody>
                 </table>
               </div>
+
+              <!-- Pagination Controls -->
+              <nav aria-label="Email pagination" class="mt-4 d-none" id="pagination-nav">
+                <ul class="pagination justify-content-center" id="pagination-controls">
+                </ul>
+              </nav>
             </div>
 
             <!-- Email Detail Overhaul -->
@@ -226,7 +237,7 @@
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="app.js?v=5"></script>
   </body>
 </html>
