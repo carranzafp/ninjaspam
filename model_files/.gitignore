@@ -1,0 +1,3 @@
+*.pkl
+# Exclude portguese for now
+pt.txt

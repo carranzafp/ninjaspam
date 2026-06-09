@@ -136,6 +136,89 @@ http://localhost:5000
 
 ---
 
+## NLP en código Python puro
+
+El notebook `workbook/NLP_1022G.ipynb` fue pensado para migrarse a código Python puro bajo la carpeta raíz `backend/`.
+
+### Archivos nuevos
+
+- `backend/nlp_models.py`: utilidades compartidas, limpieza de texto, rutas y carga de modelos.
+- `backend/nlp_training.py`: CLI de entrenamiento para generar archivos `.pkl`.
+- `backend/nlp_prediction_service.py`: servicio TCP local que responde peticiones JSON.
+- `backend/nlp_service_client.py`: cliente Python para consumir el servicio.
+
+### Entrenamiento bajo demanda
+
+Entrenar detector de idioma:
+
+```bash
+python -m backend.nlp_training train-language
+```
+
+Entrenar clasificador SPAM/HAM:
+
+```bash
+python -m backend.nlp_training train-spam
+```
+
+Entrenar clasificador SPAM/HAM incluyendo correos etiquetados manualmente en `mailclient/maildatabase.json`:
+
+```bash
+python -m backend.nlp_training train-spam --include-local-db
+```
+
+Entrenar todo en el orden correcto:
+
+```bash
+python -m backend.nlp_training train-all --include-local-db
+```
+
+### Regla para usar datos del maildatabase
+
+Solo se incluyen registros del `maildatabase.json` que cumplan estas condiciones:
+
+- estén etiquetados manualmente como `SPAM` o `HAM`
+- tengan **subject** y **body** no vacíos
+- su idioma detectado sea uno de los soportados por defecto: `english`, `spanish`, `french`
+
+> Nota: `portuguese` se dejó fuera por defecto porque el archivo actual `model_files/pt.txt`
+> es desproporcionadamente grande (~1.2 GB). Se puede reactivar después con una versión
+> recortada o curada del corpus para mantener el repositorio manejable.
+
+### Servicio de predicción por socket TCP
+
+Iniciar el servicio local:
+
+```bash
+python -m backend.nlp_prediction_service --host 127.0.0.1 --port 8765
+```
+
+Protocolo: una línea JSON por conexión.
+
+Ejemplo de request:
+
+```json
+{"action":"predict_email","subject":"Win a free prize","message":"Click here now"}
+```
+
+Ejemplo de request de salud:
+
+```json
+{"action":"health"}
+```
+
+### Operación con crontab
+
+Si el reentrenamiento corre cada 24 horas vía `crontab`, la recomendación es:
+
+1. reentrenar modelos
+2. sobrescribir los `.pkl` en `model_files/`
+3. reiniciar el servicio `backend.nlp_prediction_service`
+
+Ese enfoque es más simple y seguro que recargar modelos en caliente en esta primera versión.
+
+---
+
 ## Despliegue en servidor cPanel
 
 Para ejecutar el proyecto en un servidor cPanel con soporte para aplicaciones Python, se recomienda crear una aplicación Python (Passenger) desde el panel de control.
