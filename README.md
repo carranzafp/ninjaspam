@@ -230,8 +230,9 @@ python -m backend.nlp_prediction_service --host 127.0.0.1 --port 8765
 python backend/nlp_prediction_service.py --host 127.0.0.1 --port 8765
 ```
 
-Para despliegue remoto se agregó un script de arranque que activa el virtualenv,
-entra al directorio del proyecto y levanta el servicio:
+Para despliegue remoto se agregó un script de arranque que entra al directorio
+del proyecto y levanta el servicio usando directamente el Python del virtualenv
+de cPanel:
 
 ```bash
 ./backend/start_nlp_prediction_service.sh
@@ -253,7 +254,7 @@ Además se agregó un wrapper dedicado para detenerlo:
 ```
 
 Internamente el script:
-- activa el virtualenv remoto
+- usa directamente el ejecutable Python del virtualenv remoto
 - guarda el PID en `tmp/nlp_prediction_service.pid`
 - escribe logs en `logs/nlp_prediction_service.log`
 - evita iniciar una segunda copia si ya existe una en ejecución
@@ -271,6 +272,14 @@ NLP_SERVICE_HOST=127.0.0.1 \
 NLP_SERVICE_PORT=9000 \
 NLP_SERVICE_LOG_LEVEL=DEBUG \
 ./backend/start_nlp_prediction_service.sh
+```
+
+Si cPanel crea el virtualenv en una ruta distinta, puedes sobreescribir el
+ejecutable Python sin editar el script:
+
+```bash
+NLP_SERVICE_PYTHON=/ruta/real/al/virtualenv/bin/python \
+./backend/start_nlp_prediction_service.sh start
 ```
 
 Para `crontab` en cPanel, lo más simple es usar el comando `start`, porque no

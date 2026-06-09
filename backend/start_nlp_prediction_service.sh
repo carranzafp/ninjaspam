@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-VENV_ACTIVATE="/home/labsinpecs/virtualenv/public_html/unir/ninjaspam/3.11/bin/activate"
 PROJECT_DIR="/home/labsinpecs/public_html/unir/ninjaspam"
+DEFAULT_VENV_PYTHON="/home/labsinpecs/virtualenv/public_html/unir/ninjaspam/3.11/bin/python"
 DEFAULT_HOST="127.0.0.1"
 DEFAULT_PORT="8765"
 DEFAULT_LOG_LEVEL="INFO"
@@ -12,6 +12,7 @@ PID_DIR="$PROJECT_DIR/tmp"
 PID_FILE="$PID_DIR/nlp_prediction_service.pid"
 LOG_FILE="$LOG_DIR/nlp_prediction_service.log"
 
+PYTHON_BIN="${NLP_SERVICE_PYTHON:-$DEFAULT_VENV_PYTHON}"
 HOST="${NLP_SERVICE_HOST:-$DEFAULT_HOST}"
 PORT="${NLP_SERVICE_PORT:-$DEFAULT_PORT}"
 LOG_LEVEL="${NLP_SERVICE_LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
@@ -24,6 +25,7 @@ Usage: $(basename "$0") [start|stop|restart|status] [--host HOST] [--port PORT] 
 Manages the NinjaSpam NLP prediction TCP service on the remote server.
 
 Environment overrides:
+  NLP_SERVICE_PYTHON     Override Python executable (${DEFAULT_VENV_PYTHON})
   NLP_SERVICE_HOST       Override default host (${DEFAULT_HOST})
   NLP_SERVICE_PORT       Override default port (${DEFAULT_PORT})
   NLP_SERVICE_LOG_LEVEL  Override default log level (${DEFAULT_LOG_LEVEL})
@@ -35,8 +37,8 @@ USAGE
 }
 
 ensure_environment() {
-  if [[ ! -f "$VENV_ACTIVATE" ]]; then
-    echo "Virtualenv activation script not found: $VENV_ACTIVATE" >&2
+  if [[ ! -x "$PYTHON_BIN" ]]; then
+    echo "Python executable not found or not executable: $PYTHON_BIN" >&2
     exit 1
   fi
 
@@ -46,9 +48,6 @@ ensure_environment() {
   fi
 
   mkdir -p "$LOG_DIR" "$PID_DIR"
-
-  # shellcheck disable=SC1090
-  source "$VENV_ACTIVATE"
   cd "$PROJECT_DIR"
 }
 
@@ -73,10 +72,11 @@ start_service() {
   fi
 
   echo "[nlp-service] Starting prediction service from $PROJECT_DIR"
+  echo "[nlp-service] Python=$PYTHON_BIN"
   echo "[nlp-service] Host=$HOST Port=$PORT LogLevel=$LOG_LEVEL"
   echo "[nlp-service] Log file: $LOG_FILE"
 
-  nohup python backend/nlp_prediction_service.py \
+  nohup "$PYTHON_BIN" backend/nlp_prediction_service.py \
     --host "$HOST" \
     --port "$PORT" \
     --log-level "$LOG_LEVEL" \
