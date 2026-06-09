@@ -230,6 +230,28 @@ python -m backend.nlp_prediction_service --host 127.0.0.1 --port 8765
 python backend/nlp_prediction_service.py --host 127.0.0.1 --port 8765
 ```
 
+Para despliegue remoto se agregó un script de arranque que activa el virtualenv,
+entra al directorio del proyecto y levanta el servicio:
+
+```bash
+./backend/start_nlp_prediction_service.sh
+```
+
+También acepta parámetros opcionales:
+
+```bash
+./backend/start_nlp_prediction_service.sh --host 127.0.0.1 --port 8765 --log-level INFO
+```
+
+Y permite sobreescribir valores por variables de entorno:
+
+```bash
+NLP_SERVICE_HOST=127.0.0.1 \
+NLP_SERVICE_PORT=9000 \
+NLP_SERVICE_LOG_LEVEL=DEBUG \
+./backend/start_nlp_prediction_service.sh
+```
+
 Protocolo: una línea JSON por conexión.
 
 Ejemplo de request:
