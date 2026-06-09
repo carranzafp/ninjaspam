@@ -237,6 +237,27 @@ entra al directorio del proyecto y levanta el servicio:
 ./backend/start_nlp_prediction_service.sh
 ```
 
+El mismo script ahora también funciona como administrador básico del servicio:
+
+```bash
+./backend/start_nlp_prediction_service.sh start
+./backend/start_nlp_prediction_service.sh status
+./backend/start_nlp_prediction_service.sh restart
+./backend/start_nlp_prediction_service.sh stop
+```
+
+Además se agregó un wrapper dedicado para detenerlo:
+
+```bash
+./backend/stop_nlp_prediction_service.sh
+```
+
+Internamente el script:
+- activa el virtualenv remoto
+- guarda el PID en `tmp/nlp_prediction_service.pid`
+- escribe logs en `logs/nlp_prediction_service.log`
+- evita iniciar una segunda copia si ya existe una en ejecución
+
 También acepta parámetros opcionales:
 
 ```bash
@@ -250,6 +271,19 @@ NLP_SERVICE_HOST=127.0.0.1 \
 NLP_SERVICE_PORT=9000 \
 NLP_SERVICE_LOG_LEVEL=DEBUG \
 ./backend/start_nlp_prediction_service.sh
+```
+
+Para `crontab` en cPanel, lo más simple es usar el comando `start`, porque no
+duplicará el proceso si ya está corriendo:
+
+```bash
+*/5 * * * * /home/labsinpecs/public_html/unir/ninjaspam/backend/start_nlp_prediction_service.sh start >/dev/null 2>&1
+```
+
+Y después de un reentrenamiento de modelos puedes usar:
+
+```bash
+/home/labsinpecs/public_html/unir/ninjaspam/backend/start_nlp_prediction_service.sh restart
 ```
 
 Protocolo: una línea JSON por conexión.
