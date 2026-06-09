@@ -295,6 +295,35 @@ Y después de un reentrenamiento de modelos puedes usar:
 /home/labsinpecs/public_html/unir/ninjaspam/backend/start_nlp_prediction_service.sh restart
 ```
 
+### Script para reentrenamiento SPAM con cron
+
+Se agregó un script dedicado para reentrenar **solo** el clasificador SPAM/HAM,
+usando también los correos etiquetados manualmente en `mailclient/maildatabase.json`:
+
+```bash
+./backend/run_spam_retraining.sh
+```
+
+Este script:
+- usa directamente el Python del virtualenv de cPanel
+- ejecuta `train-spam --include-local-db`
+- escribe logs en `logs/nlp_spam_retraining.log`
+- usa un lock en `tmp/nlp_spam_retraining.lock` para evitar ejecuciones solapadas
+- **no** reinicia el servicio de predicción
+
+Ejemplo de cron cada 24 horas:
+
+```bash
+0 2 * * * /home/labsinpecs/public_html/unir/ninjaspam/backend/run_spam_retraining.sh >/dev/null 2>&1
+```
+
+Si el Python del virtualenv cambia de ruta, puedes sobreescribirlo así:
+
+```bash
+NLP_SERVICE_PYTHON=/ruta/real/al/virtualenv/bin/python \
+./backend/run_spam_retraining.sh
+```
+
 Protocolo: una línea JSON por conexión.
 
 Ejemplo de request:
