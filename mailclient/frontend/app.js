@@ -148,6 +148,19 @@ function processResponse(message) {
     return;
   }
 
+  if (message.event === "inbox_predictions") {
+    if (!message.success) {
+      return;
+    }
+
+    for (const prediction of message.predictions || []) {
+      upsertEmailFields(prediction.uid, prediction);
+    }
+
+    renderCurrentPage();
+    return;
+  }
+
   if (message.event === "config_saved") {
     if (!message.success) {
       showAlert(configStatus, message.error || "Could not save config.", "danger");
@@ -164,6 +177,14 @@ function processResponse(message) {
       showAlert(emailDetailStatus, message.error || "Could not load email details.", "danger");
       return;
     }
+    upsertEmailFields(message.email.uid, {
+      predicted_label: message.email.predicted_label,
+      predicted_language: message.email.predicted_language,
+      predicted_language_confidence: message.email.predicted_language_confidence,
+      prediction_basis: message.email.prediction_basis,
+      prediction_attempted: message.email.prediction_attempted,
+    });
+    renderCurrentPage();
     renderEmailDetail(message.email);
     showAlert(emailDetailStatus, "Email loaded.", "success");
     return;
@@ -196,15 +217,8 @@ function processResponse(message) {
     }
     const tag = message.mitl_tag;
     showAlert(emailDetailStatus, `Email successfully tagged as ${tag} and saved to database.`, "success");
-    // Update MITL badge in list if it exists
-    const row = document.querySelector(`.email-row[data-email-uid="${state.selectedEmailUid}"]`);
-    if (row) {
-        const badge = row.querySelector('.badge-score-mitl');
-        if (badge) {
-            badge.textContent = tag;
-            badge.className = `badge badge-score-mitl ${tag === 'SPAM' ? 'bg-danger' : 'bg-success'}`;
-        }
-    }
+    upsertEmailFields(state.selectedEmailUid, { mitl_tag: tag });
+    renderCurrentPage();
     return;
   }
 
@@ -290,7 +304,7 @@ function renderCurrentPage() {
   if (counterEl) counterEl.textContent = emails.length;
 
   if (!emails.length) {
-    emailTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-5">No emails found in the inbox.</td></tr>`;
+    emailTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-5">No emails found in the inbox.</td></tr>`;
     document.getElementById("pagination-nav").classList.add("d-none");
     return;
   }
@@ -303,14 +317,23 @@ function renderCurrentPage() {
         
         const ais = email.ai_score !== undefined && email.ai_score !== null ? email.ai_score : "?";
         const aisClass = ais === "?" ? "bg-secondary" : (ais > 75 ? "bg-danger" : (ais > 35 ? "bg-warning text-dark" : "bg-success"));
+
+        const predicted = email.predicted_label || (email.prediction_attempted ? "?" : "...");
+        const predictedClass = predicted === "SPAM"
+          ? "bg-danger"
+          : predicted === "HAM"
+            ? "bg-success"
+            : "bg-secondary";
+        const predictionTooltip = buildPredictionTooltip(email);
         
         const mitl = email.mitl_tag || "?";
         const mitlClass = mitl === "?" ? "bg-secondary" : (mitl === "SPAM" ? "bg-danger" : "bg-success");
         
         return `
-        <tr class="email-row" data-email-uid="${email.uid}">
+        <tr class="email-row ${Number(email.uid) === Number(state.selectedEmailUid) ? 'table-active' : ''}" data-email-uid="${email.uid}">
           <td class="text-center"><span class="badge ${tsClass} badge-score-tech" id="table-score-tech-${email.uid}">${ts}</span></td>
           <td class="text-center"><span class="badge ${aisClass} badge-score-ai" id="table-score-ai-${email.uid}">${ais}</span></td>
+          <td class="text-center"><span class="badge ${predictedClass} badge-score-predicted" id="table-score-predicted-${email.uid}" ${predictionTooltip ? `data-bs-toggle="tooltip" data-bs-title="${escapeHtml(predictionTooltip)}"` : ''}>${predicted}</span></td>
           <td class="text-center"><span class="badge ${mitlClass} badge-score-mitl" id="table-score-mitl-${email.uid}">${mitl}</span></td>
           <td class="fw-semibold">${escapeHtml(email.subject)}</td>
           <td class="text-secondary">${escapeHtml(email.from)}</td>
@@ -321,11 +344,96 @@ function renderCurrentPage() {
     )
     .join("");
 
+  initializeTooltips(emailTableBody);
+
   document.querySelectorAll(".email-row").forEach((row) => {
     row.addEventListener("click", () => selectEmail(row.dataset.emailUid, row));
   });
   
   renderPaginationControls();
+  requestPredictionsForVisiblePage();
+}
+
+function requestPredictionsForVisiblePage() {
+  const start = (state.currentPage - 1) * state.pageSize;
+  const end = start + state.pageSize;
+  const pageEmails = state.emails.slice(start, end);
+  const missingPredictions = pageEmails
+    .filter((email) => !email.prediction_attempted)
+    .map((email) => ({
+      uid: email.uid,
+      message_id: email.message_id,
+      subject: email.subject,
+      from: email.from,
+      date: email.date,
+    }));
+
+  if (!missingPredictions.length) {
+    return;
+  }
+
+  for (const email of pageEmails) {
+    if (!email.prediction_attempted) {
+      email.prediction_attempted = true;
+    }
+  }
+
+  sendCommand("predict_inbox_rows", { emails: missingPredictions });
+}
+
+function buildPredictionTooltip(email) {
+  if (!email.predicted_label && !email.predicted_language) {
+    return email.prediction_attempted ? "Prediction unavailable." : "Prediction pending...";
+  }
+
+  const lines = [];
+
+  if (email.predicted_label) {
+    lines.push(`Predicted: ${email.predicted_label}`);
+  }
+
+  if (email.predicted_language) {
+    const languageLabel = titleCase(email.predicted_language);
+    const confidence = typeof email.predicted_language_confidence === "number"
+      ? ` (${Math.round(email.predicted_language_confidence * 100)}%)`
+      : "";
+    lines.push(`Language: ${languageLabel}${confidence}`);
+  }
+
+  if (email.prediction_basis === "subject_only") {
+    lines.push("Basis: subject only");
+  } else if (email.prediction_basis === "subject_and_body") {
+    lines.push("Basis: subject + body");
+  }
+
+  return lines.join("\n");
+}
+
+function initializeTooltips(container) {
+  if (!window.bootstrap || !container) {
+    return;
+  }
+
+  container.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => {
+    new bootstrap.Tooltip(element);
+  });
+}
+
+function upsertEmailFields(uid, fields) {
+  const numericUid = Number(uid);
+  const email = state.emails.find((item) => Number(item.uid) === numericUid);
+  if (!email) {
+    return;
+  }
+  Object.assign(email, fields);
+}
+
+function titleCase(value) {
+  return String(value || "")
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function renderPaginationControls() {

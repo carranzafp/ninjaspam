@@ -156,6 +156,27 @@ def predict_language(text: str, language_model: Any) -> str:
     return str(language_model.predict([clean_text])[0])
 
 
+def predict_language_with_confidence(text: str, language_model: Any) -> tuple[str, float | None]:
+    clean_text = clean_email_text(text)
+    if not clean_text:
+        return "unknown", None
+
+    label = str(language_model.predict([clean_text])[0])
+
+    confidence: float | None = None
+    if hasattr(language_model, "predict_proba"):
+        probabilities = language_model.predict_proba([clean_text])[0]
+        classes = list(getattr(language_model, "classes_", []))
+        if classes:
+            try:
+                class_index = classes.index(label)
+                confidence = float(probabilities[class_index])
+            except ValueError:
+                confidence = float(max(probabilities)) if len(probabilities) else None
+
+    return label, confidence
+
+
 def predict_spam_label(text: str, spam_model: Any, spam_vectorizer: Any) -> str:
     clean_text = clean_email_text(text)
     vector = spam_vectorizer.transform([clean_text])
@@ -165,10 +186,11 @@ def predict_spam_label(text: str, spam_model: Any, spam_vectorizer: Any) -> str:
 def predict_email(subject: str, body: str, bundle: InferenceBundle) -> dict[str, Any]:
     combined = combine_subject_and_body(subject, body)
     clean_text = clean_email_text(combined)
-    language = predict_language(combined, bundle.language_model) if clean_text else "unknown"
+    language, language_confidence = predict_language_with_confidence(combined, bundle.language_model) if clean_text else ("unknown", None)
     spam_label = predict_spam_label(combined, bundle.spam_model, bundle.spam_vectorizer) if clean_text else "unknown"
     return {
         "language": language,
+        "language_confidence": language_confidence,
         "spam_label": spam_label,
         "clean_text": clean_text,
         "text": combined,

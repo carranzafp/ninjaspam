@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 from pathlib import Path
 
 from flask import Flask, send_from_directory, request, jsonify, Response
@@ -14,13 +15,16 @@ load_dotenv()
 
 from backend.config import DEFAULT_CONFIG, load_config, save_config
 from backend.imap_service import ImapMailboxClient
-from backend.mail_database import clear_database, ensure_database, test_email_with_stub, get_all_scores, update_email_scores, get_email_id
+from backend.mail_database import clear_database, ensure_database, test_email_with_stub, get_all_scores, update_email_scores, get_email_id, load_database
 from backend.email_analyzer import calculate_header_score
 from backend.ai_service import analyze_spam_with_ai
 
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / "frontend"
+NLP_SERVICE_HOST = os.environ.get("NLP_SERVICE_HOST", "127.0.0.1")
+NLP_SERVICE_PORT = int(os.environ.get("NLP_SERVICE_PORT", "8765"))
+NLP_SERVICE_TIMEOUT = float(os.environ.get("NLP_SERVICE_TIMEOUT", "5"))
 
 app = Flask(__name__, static_folder=str(FRONTEND_DIR), static_url_path="")
 ensure_database()
@@ -73,6 +77,8 @@ def api_command():
         return jsonify(handle_save_config(payload))
     elif command == "analyze_ai":
         return jsonify(handle_analyze_ai(payload))
+    elif command == "predict_inbox_rows":
+        return jsonify(handle_predict_inbox_rows(payload))
     else:
         return jsonify(_error_response("unknown_command", f"Unsupported command: {command}"))
 
@@ -107,6 +113,11 @@ def handle_connect(payload: dict) -> dict:
             email["tech_score"] = db_record.get("tech_score")
             email["ai_score"] = db_record.get("ai_score")
             email["mitl_tag"] = db_record.get("mitl_tag")
+            email["predicted_label"] = None
+            email["predicted_language"] = None
+            email["predicted_language_confidence"] = None
+            email["prediction_basis"] = None
+            email["prediction_attempted"] = False
             
     except Exception as exc:
         return _error_response("connect_failed", str(exc))
@@ -146,6 +157,9 @@ def handle_get_email_detail(payload: dict) -> dict:
         email_detail = mailbox_client.fetch_email_detail(int(uid))
         header_score = calculate_header_score(email_detail.get("headers", []))
         email_detail["header_score"] = header_score
+
+        prediction = _predict_email_record(email_detail)
+        email_detail.update(prediction)
         
         # Save tech_score to the database automatically
         update_email_scores(email_detail, tech_score=header_score["score"])
@@ -201,6 +215,45 @@ def handle_analyze_ai(payload: dict) -> dict:
     return _success_response("ai_analyzed", result)
 
 
+def handle_predict_inbox_rows(payload: dict) -> dict:
+    emails = payload.get("emails") or []
+    if not isinstance(emails, list):
+        return _error_response("inbox_predictions", "Payload field 'emails' must be a list.")
+
+    scores_db = get_all_scores()
+    full_db = load_database()
+    predictions = []
+
+    for email in emails:
+        if not isinstance(email, dict):
+            continue
+        try:
+            stub = {
+                "uid": email.get("uid"),
+                "message_id": email.get("message_id"),
+                "subject": email.get("subject"),
+                "from": email.get("from"),
+                "date": email.get("date"),
+            }
+            prediction = _predict_email_record(stub, scores_db=scores_db, full_db=full_db)
+            prediction["uid"] = email.get("uid")
+            predictions.append(prediction)
+        except Exception as exc:
+            predictions.append(
+                {
+                    "uid": email.get("uid"),
+                    "predicted_label": None,
+                    "predicted_language": None,
+                    "predicted_language_confidence": None,
+                    "prediction_basis": None,
+                    "prediction_attempted": True,
+                    "prediction_error": str(exc),
+                }
+            )
+
+    return _success_response("inbox_predictions", {"predictions": predictions})
+
+
 def _fetch_email_detail_by_uid(uid: int | None) -> dict:
     if uid is None:
         return {"error": "Missing email UID."}
@@ -219,6 +272,69 @@ def _fetch_email_detail_by_uid(uid: int | None) -> dict:
         return mailbox_client.fetch_email_detail(int(uid))
     except Exception as exc:
         return {"error": str(exc)}
+
+
+def _send_nlp_request(payload: dict) -> dict:
+    encoded = (json.dumps(payload, ensure_ascii=False) + "\n").encode("utf-8")
+    with socket.create_connection((NLP_SERVICE_HOST, NLP_SERVICE_PORT), timeout=NLP_SERVICE_TIMEOUT) as sock:
+        sock.sendall(encoded)
+        response_bytes = b""
+        while not response_bytes.endswith(b"\n"):
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            response_bytes += chunk
+
+    if not response_bytes:
+        raise RuntimeError("NLP service returned an empty response.")
+
+    response = json.loads(response_bytes.decode("utf-8").strip())
+    if not response.get("ok"):
+        raise RuntimeError(str(response.get("error") or "Unknown NLP service error."))
+    return response
+
+
+def _body_from_db_record(record: dict | None) -> str:
+    if not record:
+        return ""
+    body = record.get("body") or {}
+    if isinstance(body, dict):
+        return str(body.get("preferred") or body.get("plain") or body.get("html") or "")
+    return str(body or "")
+
+
+def _predict_email_record(email: dict, scores_db: dict | None = None, full_db: dict | None = None) -> dict:
+    scores_db = scores_db or get_all_scores()
+    full_db = full_db or load_database()
+    email_id = get_email_id(email)
+    db_record = scores_db.get(email_id) or {}
+    full_record = full_db.get(email_id) or {}
+
+    subject = str(email.get("subject") or "")
+    body = ""
+    prediction_basis = "subject_only"
+
+    email_body = email.get("body") or {}
+    if isinstance(email_body, dict):
+        body = str(email_body.get("preferred") or email_body.get("plain") or email_body.get("html") or "")
+    elif email_body:
+        body = str(email_body)
+
+    if not body:
+        body = _body_from_db_record(full_record) or _body_from_db_record(db_record)
+
+    if body:
+        prediction_basis = "subject_and_body"
+
+    prediction = _send_nlp_request({"action": "predict_email", "subject": subject, "message": body})
+
+    return {
+        "predicted_label": prediction.get("spam_label"),
+        "predicted_language": prediction.get("language"),
+        "predicted_language_confidence": prediction.get("language_confidence"),
+        "prediction_basis": prediction_basis,
+        "prediction_attempted": True,
+    }
 
 
 def _success_response(event: str, payload: dict) -> dict:
