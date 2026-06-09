@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -8,26 +9,42 @@ from typing import Any
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-from .nlp_models import (
-    ENGLISH_DATASET_PATH,
-    LANGUAGE_DATA_FILES,
-    LANGUAGE_MODEL_PATH,
-    LANGUAGE_MODEL_V1_PATH,
-    MODEL_FILES_DIR,
-    SPAM_MODEL_PATH,
-    SPAM_TFIDF_PATH,
-    SPANISH_DATASET_PATH,
-    SUPPORTED_LANGUAGES,
-    atomic_joblib_dump,
-    build_local_db_training_frame,
-    clean_email_text,
-    load_language_model,
-)
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from backend.nlp_models import (
+        ENGLISH_DATASET_PATH,
+        LANGUAGE_DATA_FILES,
+        LANGUAGE_MODEL_PATH,
+        MODEL_FILES_DIR,
+        SPAM_MODEL_PATH,
+        SPAM_TFIDF_PATH,
+        SPANISH_DATASET_PATH,
+        SUPPORTED_LANGUAGES,
+        atomic_joblib_dump,
+        build_local_db_training_frame,
+        clean_email_text,
+        load_language_model,
+    )
+else:
+    from .nlp_models import (
+        ENGLISH_DATASET_PATH,
+        LANGUAGE_DATA_FILES,
+        LANGUAGE_MODEL_PATH,
+        MODEL_FILES_DIR,
+        SPAM_MODEL_PATH,
+        SPAM_TFIDF_PATH,
+        SPANISH_DATASET_PATH,
+        SUPPORTED_LANGUAGES,
+        atomic_joblib_dump,
+        build_local_db_training_frame,
+        clean_email_text,
+        load_language_model,
+    )
 
 
 def _print_metrics(name: str, y_true: Any, y_pred: Any) -> None:
@@ -35,25 +52,77 @@ def _print_metrics(name: str, y_true: Any, y_pred: Any) -> None:
     print(classification_report(y_true, y_pred))
 
 
-def train_language_model(max_samples_per_language: int = 300000) -> Path:
+def _print_confusion_matrix(name: str, y_true: Any, y_pred: Any, labels: list[str]) -> None:
+    matrix = confusion_matrix(y_true, y_pred, labels=labels)
+    matrix_df = pd.DataFrame(matrix, index=[f"true_{label}" for label in labels], columns=[f"pred_{label}" for label in labels])
+    print(f"\n{name} confusion matrix:")
+    print(matrix_df.to_string())
+
+
+def _print_length_bucket_metrics(texts: pd.Series, y_true: pd.Series, y_pred: Any, name: str) -> None:
+    bucketed = pd.DataFrame({"text": texts, "y_true": y_true, "y_pred": y_pred})
+    bucketed["length"] = bucketed["text"].astype(str).str.len()
+
+    def bucket_for_length(length: int) -> str:
+        if length <= 20:
+            return "short_0_20"
+        if length <= 50:
+            return "medium_21_50"
+        return "long_51_plus"
+
+    bucketed["bucket"] = bucketed["length"].apply(bucket_for_length)
+    print(f"\n{name} accuracy by text-length bucket:")
+    for bucket_name in ["short_0_20", "medium_21_50", "long_51_plus"]:
+        subset = bucketed[bucketed["bucket"] == bucket_name]
+        if subset.empty:
+            print(f"- {bucket_name}: no samples")
+            continue
+        score = accuracy_score(subset["y_true"], subset["y_pred"])
+        print(f"- {bucket_name}: accuracy={score:.4f} (n={len(subset)})")
+
+
+def _progress(message: str) -> None:
+    print(f"[language-training] {message}", flush=True)
+
+
+def train_language_model(
+    max_samples_per_language: int = 300000,
+    min_text_length: int = 10,
+    cv_folds: int = 3,
+    n_jobs: int = 1,
+) -> Path:
     texts: list[str] = []
     labels: list[str] = []
 
+    _progress(
+        f"Starting language training with max_samples_per_language={max_samples_per_language}, "
+        f"min_text_length={min_text_length}"
+    )
+
     for language, path in LANGUAGE_DATA_FILES.items():
-        print(f"Loading language samples for {language} from {path}...")
+        _progress(f"Loading language samples for {language} from {path}...")
         count = 0
         with path.open("r", encoding="utf-8", errors="ignore") as handle:
             for line in handle:
                 line = line.strip()
-                if len(line) <= 30:
+                if len(line) < min_text_length:
                     continue
                 texts.append(line)
                 labels.append(language)
                 count += 1
+                if count % 50000 == 0:
+                    _progress(f"{language}: accepted {count} samples so far")
                 if count >= max_samples_per_language:
                     break
+        _progress(f"Finished loading {language}: accepted {count} samples")
 
     df = pd.DataFrame({"text": texts, "language": labels})
+    if df.empty:
+        raise ValueError("No language samples were loaded. Check corpus files and minimum text length.")
+
+    _progress(f"Total accepted language samples: {len(df)}")
+    _progress(f"Per-language counts:\n{df['language'].value_counts().to_string()}")
+
     X_train, X_test, y_train, y_test = train_test_split(
         df["text"],
         df["language"],
@@ -66,26 +135,57 @@ def train_language_model(max_samples_per_language: int = 300000) -> Path:
         [
             (
                 "tfidf",
-                TfidfVectorizer(analyzer="char", ngram_range=(3, 6), min_df=5),
+                TfidfVectorizer(analyzer="char"),
             ),
             (
                 "classifier",
-                LogisticRegression(max_iter=1000, verbose=1),
+                LogisticRegression(max_iter=1500),
             ),
         ]
     )
 
+    param_grid = {
+        "tfidf__ngram_range": [(2, 5), (3, 5), (3, 6)],
+        "tfidf__min_df": [2, 3, 5],
+        "classifier__C": [0.5, 1.0, 2.0],
+    }
+
+    total_candidates = (
+        len(param_grid["tfidf__ngram_range"])
+        * len(param_grid["tfidf__min_df"])
+        * len(param_grid["classifier__C"])
+    )
+    _progress(
+        f"Prepared grid search with {total_candidates} parameter combinations and {cv_folds}-fold CV "
+        f"({total_candidates * cv_folds} total fits, n_jobs={n_jobs})"
+    )
+
+    search = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        cv=StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42),
+        n_jobs=n_jobs,
+        scoring="accuracy",
+        verbose=3,
+    )
+
+    _progress("Starting GridSearchCV fit. You should now see periodic sklearn progress logs.")
     start = time.perf_counter()
-    model.fit(X_train, y_train)
+    search.fit(X_train, y_train)
     elapsed = time.perf_counter() - start
-    print(f"Language model trained in {elapsed:.2f}s")
+    _progress(f"Language model selection/training completed in {elapsed:.2f}s")
+    _progress(f"Best language params: {search.best_params_}")
+    _progress(f"Best CV score: {search.best_score_:.4f}")
 
-    predictions = model.predict(X_test)
+    best_model = search.best_estimator_
+    _progress("Evaluating best language model on held-out test split...")
+    predictions = best_model.predict(X_test)
     _print_metrics("Language model", y_test, predictions)
+    _print_confusion_matrix("Language model", y_test, predictions, labels=sorted(df["language"].unique()))
+    _print_length_bucket_metrics(X_test, y_test, predictions, "Language model")
 
-    atomic_joblib_dump(model, LANGUAGE_MODEL_PATH)
-    atomic_joblib_dump(model, LANGUAGE_MODEL_V1_PATH)
-    print(f"Saved language models to {LANGUAGE_MODEL_PATH} and {LANGUAGE_MODEL_V1_PATH}")
+    atomic_joblib_dump(best_model, LANGUAGE_MODEL_PATH)
+    _progress(f"Saved language model to {LANGUAGE_MODEL_PATH}")
     return LANGUAGE_MODEL_PATH
 
 
@@ -175,12 +275,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     language_parser = subparsers.add_parser("train-language", help="Train the language detector.")
     language_parser.add_argument("--max-samples-per-language", type=int, default=300000)
+    language_parser.add_argument("--min-language-text-length", type=int, default=10)
+    language_parser.add_argument("--cv-folds", type=int, default=3)
+    language_parser.add_argument("--jobs", type=int, default=1)
 
     spam_parser = subparsers.add_parser("train-spam", help="Train the spam/ham classifier.")
     spam_parser.add_argument("--include-local-db", action="store_true")
 
     all_parser = subparsers.add_parser("train-all", help="Train all models in the correct order.")
     all_parser.add_argument("--max-samples-per-language", type=int, default=300000)
+    all_parser.add_argument("--min-language-text-length", type=int, default=10)
+    all_parser.add_argument("--cv-folds", type=int, default=3)
+    all_parser.add_argument("--jobs", type=int, default=1)
     all_parser.add_argument("--include-local-db", action="store_true")
     return parser
 
@@ -192,13 +298,23 @@ def main() -> int:
     MODEL_FILES_DIR.mkdir(parents=True, exist_ok=True)
 
     if args.command == "train-language":
-        train_language_model(max_samples_per_language=args.max_samples_per_language)
+        train_language_model(
+            max_samples_per_language=args.max_samples_per_language,
+            min_text_length=args.min_language_text_length,
+            cv_folds=args.cv_folds,
+            n_jobs=args.jobs,
+        )
         return 0
     if args.command == "train-spam":
         train_spam_model(include_local_db=args.include_local_db)
         return 0
     if args.command == "train-all":
-        train_language_model(max_samples_per_language=args.max_samples_per_language)
+        train_language_model(
+            max_samples_per_language=args.max_samples_per_language,
+            min_text_length=args.min_language_text_length,
+            cv_folds=args.cv_folds,
+            n_jobs=args.jobs,
+        )
         train_spam_model(include_local_db=args.include_local_db)
         return 0
 

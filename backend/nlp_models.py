@@ -34,7 +34,6 @@ ENGLISH_DATASET_PATH = MODEL_FILES_DIR / "english_dataset.csv"
 SPANISH_DATASET_PATH = MODEL_FILES_DIR / "spanish_dataset.csv"
 
 LANGUAGE_MODEL_PATH = MODEL_FILES_DIR / "language_detector.pkl"
-LANGUAGE_MODEL_V1_PATH = MODEL_FILES_DIR / "language_detector_v1.pkl"
 SPAM_MODEL_PATH = MODEL_FILES_DIR / "spam_ham_model.pkl"
 SPAM_TFIDF_PATH = MODEL_FILES_DIR / "tfidf_spam.pkl"
 
@@ -126,8 +125,6 @@ def load_language_model(path: Path | None = None) -> Any:
     preferred_path = path or LANGUAGE_MODEL_PATH
     if preferred_path.exists():
         return joblib.load(preferred_path)
-    if LANGUAGE_MODEL_V1_PATH.exists():
-        return joblib.load(LANGUAGE_MODEL_V1_PATH)
     raise FileNotFoundError("Language model PKL not found. Train the language model first.")
 
 

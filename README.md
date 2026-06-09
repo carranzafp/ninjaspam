@@ -153,24 +153,59 @@ Entrenar detector de idioma:
 
 ```bash
 python -m backend.nlp_training train-language
+# o
+python backend/nlp_training.py train-language
+```
+
+El entrenamiento de idioma ahora:
+- usa un mínimo de longitud menos agresivo por defecto (`--min-language-text-length 10`)
+- prueba varias combinaciones de `ngram_range`, `min_df` y `C`
+- reporta matriz de confusión y métricas por longitud del texto
+- guarda solo un artefacto final: `model_files/language_detector.pkl`
+
+Para evitar congelar una laptop o desktop, el grid search ahora usa una configuración
+segura por defecto:
+- `--jobs 1` (un proceso de entrenamiento a la vez)
+- `--cv-folds 3`
+
+Si quieres subir la intensidad manualmente, puedes hacerlo por ejemplo con:
+
+```bash
+python backend/nlp_training.py train-language --jobs 2 --cv-folds 3
+```
+
+Para una corrida más ligera de prueba:
+
+```bash
+python backend/nlp_training.py train-language \
+  --max-samples-per-language 50000 \
+  --min-language-text-length 10 \
+  --jobs 1 \
+  --cv-folds 2
 ```
 
 Entrenar clasificador SPAM/HAM:
 
 ```bash
 python -m backend.nlp_training train-spam
+# o
+python backend/nlp_training.py train-spam
 ```
 
 Entrenar clasificador SPAM/HAM incluyendo correos etiquetados manualmente en `mailclient/maildatabase.json`:
 
 ```bash
 python -m backend.nlp_training train-spam --include-local-db
+# o
+python backend/nlp_training.py train-spam --include-local-db
 ```
 
 Entrenar todo en el orden correcto:
 
 ```bash
 python -m backend.nlp_training train-all --include-local-db
+# o
+python backend/nlp_training.py train-all --include-local-db
 ```
 
 ### Regla para usar datos del maildatabase
@@ -191,6 +226,8 @@ Iniciar el servicio local:
 
 ```bash
 python -m backend.nlp_prediction_service --host 127.0.0.1 --port 8765
+# o
+python backend/nlp_prediction_service.py --host 127.0.0.1 --port 8765
 ```
 
 Protocolo: una línea JSON por conexión.
@@ -206,6 +243,26 @@ Ejemplo de request de salud:
 ```json
 {"action":"health"}
 ```
+
+### Cliente shell para probar el servicio
+
+Se agregó un cliente de prueba en:
+
+```bash
+./backend/test_prediction_service.sh
+```
+
+Ejemplo de uso:
+
+```bash
+./backend/test_prediction_service.sh \
+  --subject "Win a free prize" \
+  --body "Click here now to claim your reward" \
+  --host 127.0.0.1 \
+  --port 8765
+```
+
+Esto envía una petición `predict_email` al servicio TCP y muestra la respuesta JSON formateada.
 
 ### Operación con crontab
 

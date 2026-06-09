@@ -4,9 +4,15 @@ import argparse
 import json
 import logging
 import socketserver
+import sys
+from pathlib import Path
 from typing import Any
 
-from .nlp_models import InferenceBundle, load_inference_bundle, predict_email
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from backend.nlp_models import InferenceBundle, load_inference_bundle, predict_email
+else:
+    from .nlp_models import InferenceBundle, load_inference_bundle, predict_email
 
 
 LOGGER = logging.getLogger("backend.nlp_prediction_service")
